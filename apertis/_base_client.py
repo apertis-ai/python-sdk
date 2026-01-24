@@ -130,22 +130,24 @@ class SyncClient(BaseClient):
         headers: Optional[Mapping[str, str]] = None,
     ) -> httpx.Response:
         """Make a streaming HTTP request."""
+        import json as json_lib
         url = self._build_url(path)
         request_headers = self._build_headers(headers)
 
         try:
-            response = self._client.stream(
+            # Build request manually for streaming
+            request = self._client.build_request(
                 method,
                 url,
                 json=json,
                 headers=request_headers,
             )
-            response_ctx = response.__enter__()
+            response = self._client.send(request, stream=True)
 
-            if response_ctx.status_code >= 400:
-                self._raise_for_status(response_ctx)
+            if response.status_code >= 400:
+                self._raise_for_status(response)
 
-            return response_ctx
+            return response
 
         except httpx.TimeoutException as e:
             raise APITimeoutError(f"Request timed out: {e}", cause=e) from e
@@ -257,12 +259,14 @@ class AsyncClient(BaseClient):
         request_headers = self._build_headers(headers)
 
         try:
-            response = await self._client.stream(
+            # Build request manually for streaming
+            request = self._client.build_request(
                 method,
                 url,
                 json=json,
                 headers=request_headers,
-            ).__aenter__()
+            )
+            response = await self._client.send(request, stream=True)
 
             if response.status_code >= 400:
                 await self._raise_for_status(response)

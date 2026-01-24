@@ -10,6 +10,6 @@ from pydantic import BaseModel
 class Usage(BaseModel):
     """Token usage information."""
 
-    prompt_tokens: int
-    completion_tokens: int
+    prompt_tokens: Optional[int] = None
+    completion_tokens: Optional[int] = None
     total_tokens: Optional[int] = None

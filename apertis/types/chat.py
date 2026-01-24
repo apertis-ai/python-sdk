@@ -43,17 +43,17 @@ class ChatCompletionChoice(BaseModel):
 class Usage(BaseModel):
     """Token usage for chat completion."""
 
-    prompt_tokens: int
-    completion_tokens: int
+    prompt_tokens: Optional[int] = None
+    completion_tokens: Optional[int] = None
     total_tokens: Optional[int] = None
 
 
 class ChatCompletion(BaseModel):
     """Chat completion response."""
 
-    id: str
-    object: Literal["chat.completion"]
-    created: int
+    id: Optional[str] = None
+    object: Optional[Literal["chat.completion"]] = None
+    created: Optional[int] = None
     model: str
     choices: List[ChatCompletionChoice]
     usage: Optional[Usage] = None
@@ -82,10 +82,10 @@ class ChatCompletionChunkChoice(BaseModel):
 class ChatCompletionChunk(BaseModel):
     """Streaming chunk response."""
 
-    id: str
-    object: Literal["chat.completion.chunk"]
-    created: int
-    model: str
+    id: Optional[str] = None
+    object: Optional[Literal["chat.completion.chunk"]] = None
+    created: Optional[int] = None
+    model: Optional[str] = None
     choices: List[ChatCompletionChunkChoice]
     usage: Optional[Usage] = None
 
