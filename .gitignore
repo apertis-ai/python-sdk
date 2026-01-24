@@ -77,3 +77,6 @@ dmypy.json
 # OS
 .DS_Store
 Thumbs.db
+
+# Design plans (local only)
+docs/plans/

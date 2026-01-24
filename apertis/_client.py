@@ -7,6 +7,10 @@ from typing import Mapping
 from apertis._base_client import AsyncClient, SyncClient
 from apertis.resources.chat import AsyncChat, Chat
 from apertis.resources.embeddings import AsyncEmbeddings, Embeddings
+from apertis.resources.models import AsyncModels, Models
+from apertis.resources.responses import AsyncResponses, Responses
+from apertis.resources.messages import AsyncMessages, Messages
+from apertis.resources.rerank import AsyncRerank, Rerank
 
 
 class Apertis:
@@ -50,6 +54,10 @@ class Apertis:
         )
         self.chat = Chat(self._client)
         self.embeddings = Embeddings(self._client)
+        self.models = Models(self._client)
+        self.responses = Responses(self._client)
+        self.messages = Messages(self._client)
+        self.rerank = Rerank(self._client)
 
     def close(self) -> None:
         """Close the underlying HTTP client."""
@@ -103,6 +111,10 @@ class AsyncApertis:
         )
         self.chat = AsyncChat(self._client)
         self.embeddings = AsyncEmbeddings(self._client)
+        self.models = AsyncModels(self._client)
+        self.responses = AsyncResponses(self._client)
+        self.messages = AsyncMessages(self._client)
+        self.rerank = AsyncRerank(self._client)
 
     async def close(self) -> None:
         """Close the underlying HTTP client."""

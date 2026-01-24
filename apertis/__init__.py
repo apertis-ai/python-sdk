@@ -28,6 +28,7 @@ from apertis._exceptions import (
     APITimeoutError,
 )
 from apertis.types import (
+    # Chat types
     ChatCompletion,
     ChatCompletionChunk,
     ChatCompletionChoice,
@@ -39,13 +40,48 @@ from apertis.types import (
     FunctionDefinition,
     ToolCall,
     Function,
+    URLCitation,
+    AudioData,
+    # Content part types
+    ContentPart,
+    TextContentPart,
+    ImageURLContentPart,
+    ImageURLDetail,
+    VideoURLContentPart,
+    VideoURLDetail,
+    InputAudioContentPart,
+    InputAudioDetail,
+    # Config types
+    AudioConfig,
+    WebSearchOptions,
+    UserLocation,
+    ReasoningConfig,
+    ThinkingConfig,
+    StreamOptions,
+    # Embedding types
     Embedding,
     EmbeddingResponse,
     EmbeddingUsage,
+    # Model types
+    Model,
+    ModelList,
+    # Response types
+    Response,
+    ResponseOutput,
+    ResponseUsage,
+    ResponseInputItem,
+    # Message types
+    Message,
+    MessageParam,
+    MessageUsage,
+    # Rerank types
+    RerankResponse,
+    RerankResult,
+    # Shared types
     Usage,
 )
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 
 __all__ = [
     # Clients
@@ -74,10 +110,43 @@ __all__ = [
     "FunctionDefinition",
     "ToolCall",
     "Function",
+    "URLCitation",
+    "AudioData",
+    # Content part types
+    "ContentPart",
+    "TextContentPart",
+    "ImageURLContentPart",
+    "ImageURLDetail",
+    "VideoURLContentPart",
+    "VideoURLDetail",
+    "InputAudioContentPart",
+    "InputAudioDetail",
+    # Config types
+    "AudioConfig",
+    "WebSearchOptions",
+    "UserLocation",
+    "ReasoningConfig",
+    "ThinkingConfig",
+    "StreamOptions",
     # Embedding types
     "Embedding",
     "EmbeddingResponse",
     "EmbeddingUsage",
+    # Model types
+    "Model",
+    "ModelList",
+    # Response types
+    "Response",
+    "ResponseOutput",
+    "ResponseUsage",
+    "ResponseInputItem",
+    # Message types
+    "Message",
+    "MessageParam",
+    "MessageUsage",
+    # Rerank types
+    "RerankResponse",
+    "RerankResult",
     # Shared types
     "Usage",
 ]
