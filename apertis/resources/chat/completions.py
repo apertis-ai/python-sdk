@@ -463,6 +463,7 @@ class AsyncCompletions:
         reasoning: ReasoningConfig | None = None,
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
         thinking: ThinkingConfig | None = None,
+        compression: CompressionConfig | None = None,
         stream_options: StreamOptions | None = None,
         extra_body: dict[str, Any] | None = None,
     ) -> AsyncStream: ...
@@ -495,6 +496,7 @@ class AsyncCompletions:
         reasoning: ReasoningConfig | None = None,
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
         thinking: ThinkingConfig | None = None,
+        compression: CompressionConfig | None = None,
         stream_options: StreamOptions | None = None,
         extra_body: dict[str, Any] | None = None,
     ) -> ChatCompletion: ...
@@ -527,6 +529,7 @@ class AsyncCompletions:
         reasoning: ReasoningConfig | None = None,
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
         thinking: ThinkingConfig | None = None,
+        compression: CompressionConfig | None = None,
         stream_options: StreamOptions | None = None,
         extra_body: dict[str, Any] | None = None,
     ) -> ChatCompletion | AsyncStream: ...
@@ -558,6 +561,7 @@ class AsyncCompletions:
         reasoning: ReasoningConfig | None = None,
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
         thinking: ThinkingConfig | None = None,
+        compression: CompressionConfig | None = None,
         stream_options: StreamOptions | None = None,
         extra_body: dict[str, Any] | None = None,
     ) -> ChatCompletion | AsyncStream:
