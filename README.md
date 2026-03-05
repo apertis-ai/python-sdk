@@ -41,6 +41,7 @@ print(response.choices[0].message.content)
 - **Audio I/O**: Audio input and output support
 - **Video**: Video content analysis
 - **Web Search**: Real-time web search integration
+- **Context Compression**: Compress long conversation history to save tokens
 - **Reasoning Mode**: Chain-of-thought reasoning support
 - **Extended Thinking**: Deep thinking for complex problems
 - **Messages API**: Anthropic-native message format
@@ -217,6 +218,44 @@ response = client.chat.completions.create(
     extra_body={
         "google": {"thinking_config": {"thinking_budget": 10240}}
     },
+)
+```
+
+### Context Compression
+
+Reduce token usage in long conversations by compressing older message history:
+
+```python
+# Chat Completions with compression
+response = client.chat.completions.create(
+    model="gpt-4.1-mini",
+    messages=[
+        {"role": "user", "content": "Explain distributed systems"},
+        {"role": "assistant", "content": "Distributed systems are..."},
+        {"role": "user", "content": "Summarize the key points"},
+    ],
+    compression={
+        "enabled": True,
+        "strategy": "aggressive",  # "on", "conservative", or "aggressive"
+        "threshold": 8000,         # Token threshold to trigger compression
+        "keep_turns": 6,           # Recent turns to always preserve
+        "model": "auto",           # Compression model ("auto" or specific model)
+    },
+)
+
+# Minimal config — just enable it
+response = client.chat.completions.create(
+    model="gpt-4.1-mini",
+    messages=[{"role": "user", "content": "Hello!"}],
+    compression={"enabled": True},
+)
+
+# Also works with Messages API and Responses API
+message = client.messages.create(
+    model="claude-sonnet-4.5",
+    messages=[{"role": "user", "content": "Hello!"}],
+    max_tokens=1024,
+    compression={"enabled": True, "strategy": "conservative"},
 )
 ```
 

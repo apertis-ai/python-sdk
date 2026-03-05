@@ -117,6 +117,16 @@ class GeminiThinkingConfig(TypedDict, total=False):
     thinking_budget: int
 
 
+class CompressionConfig(TypedDict, total=False):
+    """Context compression configuration for reducing token usage in long conversations."""
+
+    enabled: Required[bool]
+    strategy: Literal["on", "conservative", "aggressive"]
+    threshold: int
+    keep_turns: int
+    model: str
+
+
 class StreamOptions(TypedDict, total=False):
     """Stream options for streaming responses."""
 

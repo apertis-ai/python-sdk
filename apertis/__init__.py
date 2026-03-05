@@ -53,6 +53,7 @@ from apertis.types import (
     InputAudioDetail,
     # Config types
     AudioConfig,
+    CompressionConfig,
     WebSearchOptions,
     UserLocation,
     ReasoningConfig,
@@ -123,6 +124,7 @@ __all__ = [
     "InputAudioDetail",
     # Config types
     "AudioConfig",
+    "CompressionConfig",
     "WebSearchOptions",
     "UserLocation",
     "ReasoningConfig",

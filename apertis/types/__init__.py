@@ -29,6 +29,7 @@ from apertis.types.chat import (
     InputAudioDetail,
     # Config types
     AudioConfig,
+    CompressionConfig,
     WebSearchOptions,
     UserLocation,
     ReasoningConfig,
@@ -99,6 +100,7 @@ __all__ = [
     "InputAudioDetail",
     # Chat - Config types
     "AudioConfig",
+    "CompressionConfig",
     "WebSearchOptions",
     "UserLocation",
     "ReasoningConfig",

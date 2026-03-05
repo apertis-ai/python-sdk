@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Sequence, Union
 
+from apertis.types.chat import CompressionConfig
 from apertis.types.responses import Response, ResponseInputItem
 
 if TYPE_CHECKING:
@@ -32,6 +33,7 @@ class Responses:
         tools: Optional[List[Dict[str, Any]]] = None,
         tool_choice: Optional[Union[str, Dict[str, Any]]] = None,
         metadata: Optional[Dict[str, str]] = None,
+        compression: Optional[CompressionConfig] = None,
     ) -> Response:
         """Create a response.
 
@@ -46,6 +48,7 @@ class Responses:
             tools: List of tools the model can use.
             tool_choice: Controls tool selection.
             metadata: Metadata to attach to the response.
+            compression: Context compression configuration.
 
         Returns:
             Response object with generated content.
@@ -61,6 +64,7 @@ class Responses:
             tools=tools,
             tool_choice=tool_choice,
             metadata=metadata,
+            compression=compression,
         )
 
         response = self._client.request("POST", "/responses", json=body)
@@ -79,6 +83,7 @@ class Responses:
         tools: Optional[List[Dict[str, Any]]],
         tool_choice: Optional[Union[str, Dict[str, Any]]],
         metadata: Optional[Dict[str, str]],
+        compression: Optional[CompressionConfig],
     ) -> Dict[str, Any]:
         """Build request body for responses."""
         body: Dict[str, Any] = {"model": model}
@@ -105,6 +110,8 @@ class Responses:
             body["tool_choice"] = tool_choice
         if metadata is not None:
             body["metadata"] = metadata
+        if compression is not None:
+            body["compression"] = compression
 
         return body
 
@@ -128,6 +135,7 @@ class AsyncResponses:
         tools: Optional[List[Dict[str, Any]]] = None,
         tool_choice: Optional[Union[str, Dict[str, Any]]] = None,
         metadata: Optional[Dict[str, str]] = None,
+        compression: Optional[CompressionConfig] = None,
     ) -> Response:
         """Create a response asynchronously.
 
@@ -144,6 +152,7 @@ class AsyncResponses:
             tools=tools,
             tool_choice=tool_choice,
             metadata=metadata,
+            compression=compression,
         )
 
         response = await self._client.request("POST", "/responses", json=body)
@@ -162,6 +171,7 @@ def _build_request_body(
     tools: Optional[List[Dict[str, Any]]],
     tool_choice: Optional[Union[str, Dict[str, Any]]],
     metadata: Optional[Dict[str, str]],
+    compression: Optional[CompressionConfig],
 ) -> Dict[str, Any]:
     """Build request body for responses."""
     body: Dict[str, Any] = {"model": model}
@@ -187,5 +197,7 @@ def _build_request_body(
         body["tool_choice"] = tool_choice
     if metadata is not None:
         body["metadata"] = metadata
+    if compression is not None:
+        body["compression"] = compression
 
     return body

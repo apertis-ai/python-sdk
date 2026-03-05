@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Sequence, Union
 
+from apertis.types.chat import CompressionConfig
 from apertis.types.messages import Message, MessageParam, ToolDefinition
 
 if TYPE_CHECKING:
@@ -30,6 +31,7 @@ class Messages:
         tools: Optional[List[ToolDefinition]] = None,
         tool_choice: Optional[Dict[str, Any]] = None,
         metadata: Optional[Dict[str, str]] = None,
+        compression: Optional[CompressionConfig] = None,
     ) -> Message:
         """Create a message using Anthropic's native format.
 
@@ -61,6 +63,7 @@ class Messages:
             tools=tools,
             tool_choice=tool_choice,
             metadata=metadata,
+            compression=compression,
         )
 
         response = self._client.request("POST", "/messages", json=body)
@@ -87,6 +90,7 @@ class AsyncMessages:
         tools: Optional[List[ToolDefinition]] = None,
         tool_choice: Optional[Dict[str, Any]] = None,
         metadata: Optional[Dict[str, str]] = None,
+        compression: Optional[CompressionConfig] = None,
     ) -> Message:
         """Create a message asynchronously.
 
@@ -104,6 +108,7 @@ class AsyncMessages:
             tools=tools,
             tool_choice=tool_choice,
             metadata=metadata,
+            compression=compression,
         )
 
         response = await self._client.request("POST", "/messages", json=body)
@@ -123,6 +128,7 @@ def _build_request_body(
     tools: Optional[List[ToolDefinition]],
     tool_choice: Optional[Dict[str, Any]],
     metadata: Optional[Dict[str, str]],
+    compression: Optional[CompressionConfig],
 ) -> Dict[str, Any]:
     """Build request body for messages."""
     body: Dict[str, Any] = {
@@ -147,5 +153,7 @@ def _build_request_body(
         body["tool_choice"] = tool_choice
     if metadata is not None:
         body["metadata"] = metadata
+    if compression is not None:
+        body["compression"] = compression
 
     return body

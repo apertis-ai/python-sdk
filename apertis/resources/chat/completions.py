@@ -16,6 +16,7 @@ from apertis.types.chat import (
     ChatCompletion,
     ChatCompletionMessageParam,
     ChatCompletionToolParam,
+    CompressionConfig,
     ContentPart,
     ReasoningConfig,
     StreamOptions,
@@ -65,6 +66,8 @@ class Completions:
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
         # Extended thinking
         thinking: ThinkingConfig | None = None,
+        # Context compression
+        compression: CompressionConfig | None = None,
         # Stream options
         stream_options: StreamOptions | None = None,
         # Provider-specific params
@@ -103,6 +106,8 @@ class Completions:
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
         # Extended thinking
         thinking: ThinkingConfig | None = None,
+        # Context compression
+        compression: CompressionConfig | None = None,
         # Stream options
         stream_options: StreamOptions | None = None,
         # Provider-specific params
@@ -141,6 +146,8 @@ class Completions:
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
         # Extended thinking
         thinking: ThinkingConfig | None = None,
+        # Context compression
+        compression: CompressionConfig | None = None,
         # Stream options
         stream_options: StreamOptions | None = None,
         # Provider-specific params
@@ -178,6 +185,8 @@ class Completions:
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
         # Extended thinking
         thinking: ThinkingConfig | None = None,
+        # Context compression
+        compression: CompressionConfig | None = None,
         # Stream options
         stream_options: StreamOptions | None = None,
         # Provider-specific params
@@ -241,6 +250,7 @@ class Completions:
             reasoning=reasoning,
             reasoning_effort=reasoning_effort,
             thinking=thinking,
+            compression=compression,
             stream_options=stream_options,
             extra_body=extra_body,
         )
@@ -580,6 +590,7 @@ class AsyncCompletions:
             reasoning=reasoning,
             reasoning_effort=reasoning_effort,
             thinking=thinking,
+            compression=compression,
             stream_options=stream_options,
             extra_body=extra_body,
         )
@@ -742,6 +753,7 @@ def _build_request_body(
     reasoning: ReasoningConfig | None,
     reasoning_effort: Literal["low", "medium", "high"] | None,
     thinking: ThinkingConfig | None,
+    compression: CompressionConfig | None,
     stream_options: StreamOptions | None,
     extra_body: dict[str, Any] | None,
 ) -> dict[str, Any]:
@@ -803,6 +815,10 @@ def _build_request_body(
     # Extended thinking
     if thinking is not None:
         body["thinking"] = thinking
+
+    # Context compression
+    if compression is not None:
+        body["compression"] = compression
 
     # Stream options
     if stream_options is not None:
