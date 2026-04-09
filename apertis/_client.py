@@ -20,7 +20,7 @@ class Apertis:
         >>> from apertis import Apertis
         >>> client = Apertis(api_key="...")
         >>> response = client.chat.completions.create(
-        ...     model="gpt-5.2",
+        ...     model="gpt-5.4",
         ...     messages=[{"role": "user", "content": "Hello!"}]
         ... )
         >>> print(response.choices[0].message.content)
@@ -77,7 +77,7 @@ class AsyncApertis:
         >>> from apertis import AsyncApertis
         >>> client = AsyncApertis(api_key="...")
         >>> response = await client.chat.completions.create(
-        ...     model="gpt-5.2",
+        ...     model="gpt-5.4",
         ...     messages=[{"role": "user", "content": "Hello!"}]
         ... )
         >>> print(response.choices[0].message.content)

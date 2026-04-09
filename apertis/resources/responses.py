@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class Responses:
     """Synchronous responses resource.
 
-    This endpoint is for models that only support /v1/responses (e.g., gpt-5-pro, o1-pro).
+    This endpoint is for models that support /v1/responses.
     """
 
     def __init__(self, client: SyncClient) -> None:
@@ -38,7 +38,7 @@ class Responses:
         """Create a response.
 
         Args:
-            model: ID of the model to use (e.g., "gpt-5-pro", "o1-pro").
+            model: ID of the model to use (e.g., "gpt-5.4").
             input: Input text or structured input items.
             instructions: System instructions for the model.
             max_output_tokens: Maximum tokens to generate.

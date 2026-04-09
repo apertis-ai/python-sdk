@@ -139,7 +139,7 @@ class TestReasoningMode:
                     "id": "chatcmpl-123",
                     "object": "chat.completion",
                     "created": 1234567890,
-                    "model": "glm-4.7",
+                    "model": "glm-5.1",
                     "choices": [
                         {
                             "index": 0,
@@ -158,7 +158,7 @@ class TestReasoningMode:
         )
 
         response = client.chat.completions.create(
-            model="glm-4.7",
+            model="glm-5.1",
             messages=[{"role": "user", "content": "How many r's in strawberry?"}],
             reasoning={"enabled": True, "effort": "high"},
         )
@@ -175,7 +175,7 @@ class TestReasoningMode:
                     "id": "chatcmpl-123",
                     "object": "chat.completion",
                     "created": 1234567890,
-                    "model": "glm-4.7",
+                    "model": "glm-5.1",
                     "choices": [
                         {
                             "index": 0,
@@ -191,7 +191,7 @@ class TestReasoningMode:
         )
 
         response = client.chat.completions.create(
-            model="glm-4.7",
+            model="glm-5.1",
             messages=[{"role": "user", "content": "Solve this problem"}],
             reasoning_effort="high",
         )
@@ -286,7 +286,7 @@ class TestStreamOptions:
                     "id": "chatcmpl-123",
                     "object": "chat.completion",
                     "created": 1234567890,
-                    "model": "gpt-4o",
+                    "model": "gpt-5.4",
                     "choices": [
                         {
                             "index": 0,
@@ -307,7 +307,7 @@ class TestStreamOptions:
         )
 
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-5.4",
             messages=[{"role": "user", "content": "Hi"}],
             stream_options={"include_usage": True},
         )

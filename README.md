@@ -21,7 +21,7 @@ client = Apertis(api_key="your-api-key")
 # Or set APERTIS_API_KEY environment variable
 
 response = client.chat.completions.create(
-    model="gpt-5.2",
+    model="gpt-5.4",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "Hello!"}
@@ -61,7 +61,7 @@ from apertis import Apertis
 client = Apertis()
 
 response = client.chat.completions.create(
-    model="gpt-5.2",
+    model="gpt-5.4",
     messages=[{"role": "user", "content": "What is the capital of France?"}],
     temperature=0.7,
     max_tokens=100,
@@ -75,7 +75,7 @@ print(f"Tokens used: {response.usage.total_tokens}")
 
 ```python
 stream = client.chat.completions.create(
-    model="gpt-5.2",
+    model="gpt-5.4",
     messages=[{"role": "user", "content": "Tell me a story"}],
     stream=True,
 )
@@ -92,7 +92,7 @@ Analyze images using multimodal models with the convenience method:
 ```python
 # Using image URL
 response = client.chat.completions.create_with_image(
-    model="gpt-4o",
+    model="gpt-5.4",
     prompt="What is in this image?",
     image="https://example.com/photo.jpg",
 )
@@ -100,14 +100,14 @@ print(response.choices[0].message.content)
 
 # Using local file (automatically base64 encoded)
 response = client.chat.completions.create_with_image(
-    model="gpt-4o",
+    model="gpt-5.4",
     prompt="Describe this image",
     image="/path/to/local/image.png",
 )
 
 # Multiple images
 response = client.chat.completions.create_with_image(
-    model="gpt-4o",
+    model="gpt-5.4",
     prompt="Compare these images",
     image=["https://example.com/img1.jpg", "https://example.com/img2.jpg"],
     system="Be detailed in your comparison.",
@@ -118,7 +118,7 @@ Or use the standard API format:
 
 ```python
 response = client.chat.completions.create(
-    model="gpt-4o",
+    model="gpt-5.4",
     messages=[{
         "role": "user",
         "content": [
@@ -134,7 +134,7 @@ response = client.chat.completions.create(
 ```python
 # Audio input
 response = client.chat.completions.create(
-    model="gpt-4o-audio-preview",
+    model="gpt-5.4",
     messages=[{
         "role": "user",
         "content": [
@@ -146,7 +146,7 @@ response = client.chat.completions.create(
 
 # Audio output
 response = client.chat.completions.create(
-    model="gpt-4o-audio-preview",
+    model="gpt-5.4",
     messages=[{"role": "user", "content": "Say hello in a friendly voice"}],
     modalities=["text", "audio"],
     audio={"voice": "alloy", "format": "wav"},
@@ -187,14 +187,14 @@ Enable chain-of-thought reasoning for complex problems:
 
 ```python
 response = client.chat.completions.create(
-    model="glm-4.7",
+    model="glm-5.1",
     messages=[{"role": "user", "content": "How many r's are in strawberry?"}],
     reasoning={"enabled": True, "effort": "high"},
 )
 
 # Or use shorthand
 response = client.chat.completions.create(
-    model="glm-4.7",
+    model="glm-5.1",
     messages=[{"role": "user", "content": "Solve this math problem..."}],
     reasoning_effort="high",
 )
@@ -252,7 +252,7 @@ response = client.chat.completions.create(
 
 # Also works with Messages API and Responses API
 message = client.messages.create(
-    model="claude-sonnet-4.5",
+    model="claude-sonnet-4-6",
     messages=[{"role": "user", "content": "Hello!"}],
     max_tokens=1024,
     compression={"enabled": True, "strategy": "conservative"},
@@ -269,7 +269,7 @@ async def main():
     client = AsyncApertis()
 
     response = await client.chat.completions.create(
-        model="gpt-5.2",
+        model="gpt-5.4",
         messages=[{"role": "user", "content": "Hello!"}]
     )
     print(response.choices[0].message.content)
@@ -286,7 +286,7 @@ async def stream_example():
     client = AsyncApertis()
 
     stream = await client.chat.completions.create(
-        model="gpt-5.2",
+        model="gpt-5.4",
         messages=[{"role": "user", "content": "Tell me a joke"}],
         stream=True,
     )
@@ -302,7 +302,7 @@ async def stream_example():
 
 ```python
 response = client.chat.completions.create(
-    model="gpt-5.2",
+    model="gpt-5.4",
     messages=[{"role": "user", "content": "What's the weather in Tokyo?"}],
     tools=[{
         "type": "function",
@@ -365,7 +365,7 @@ for model in models.data:
     print(f"{model.id} - owned by {model.owned_by}")
 
 # Retrieve specific model
-model = client.models.retrieve("gpt-5.2")
+model = client.models.retrieve("gpt-5.4")
 print(f"Model: {model.id}, Created: {model.created}")
 ```
 
@@ -375,7 +375,7 @@ Use Anthropic-native message format:
 
 ```python
 message = client.messages.create(
-    model="claude-sonnet-4.5",
+    model="claude-sonnet-4-6",
     messages=[{"role": "user", "content": "Hello, Claude!"}],
     max_tokens=1024,
     system="You are a helpful assistant.",
@@ -389,7 +389,7 @@ With tool use:
 
 ```python
 message = client.messages.create(
-    model="claude-sonnet-4.5",
+    model="claude-sonnet-4-6",
     messages=[{"role": "user", "content": "What's the weather in Paris?"}],
     max_tokens=1024,
     tools=[{
@@ -415,7 +415,7 @@ Use OpenAI Responses API format for advanced use cases:
 
 ```python
 response = client.responses.create(
-    model="gpt-5-pro",
+    model="gpt-5.4",
     input="Write a haiku about programming",
 )
 
@@ -423,7 +423,7 @@ print(response.output[0].content[0].text)
 
 # With reasoning
 response = client.responses.create(
-    model="o1-pro",
+    model="gpt-5.4",
     input="Solve this complex problem...",
     reasoning={"effort": "high"},
 )
@@ -476,7 +476,7 @@ client = Apertis()
 
 try:
     response = client.chat.completions.create(
-        model="gpt-5.2",
+        model="gpt-5.4",
         messages=[{"role": "user", "content": "Hello!"}]
     )
 except AuthenticationError as e:
@@ -508,7 +508,7 @@ client = Apertis(
 ```python
 with Apertis() as client:
     response = client.chat.completions.create(
-        model="gpt-5.2",
+        model="gpt-5.4",
         messages=[{"role": "user", "content": "Hello!"}]
     )
 # Client is automatically closed
@@ -520,21 +520,22 @@ async with AsyncApertis() as client:
 
 ## Available Models
 
+Any model available on [Apertis AI](https://apertis.ai), including:
+
 ### Chat Models
-- `gpt-5.2`, `gpt-5.2-codex`, `gpt-5.1`, `gpt-5-pro`
-- `gpt-4o`, `gpt-4o-audio-preview`
-- `claude-opus-4-5-20251101`, `claude-sonnet-4.5`, `claude-haiku-4.5`
-- `gemini-3-pro-preview`, `gemini-3-flash-preview`, `gemini-2.5-flash-preview`
-- `glm-4.7`, `glm-4.6v` (vision)
+- **OpenAI**: `gpt-5.4`, `gpt-5.1`, `gpt-5.3-codex`
+- **Anthropic**: `claude-opus-4-6`, `claude-sonnet-4-6`, `claude-haiku-4.5`
+- **Google**: `gemini-3-pro-preview`, `gemini-3-flash-preview`, `gemini-2.5-flash-preview`
+- **Other**: `glm-5.1`, `minimax-m2.7`, and 500+ more models
 
 ### Reasoning Models
-- `o1-pro`, `glm-4.7` (with reasoning enabled)
+- `glm-5.1` (with reasoning enabled)
 
 ### Search Models
 - `gpt-5-search-api`
 
 ### Embedding Models
-- `text-embedding-3-small`, `text-embedding-3-large`, `text-embedding-ada-002`
+- `text-embedding-3-small`, `text-embedding-3-large`
 
 ### Rerank Models
 - `BAAI/bge-reranker-v2-m3`

@@ -23,7 +23,7 @@ class TestResponsesCreate:
                     "object": "response",
                     "created_at": 1234567890,
                     "status": "completed",
-                    "model": "gpt-5-pro",
+                    "model": "gpt-5.4",
                     "output": [
                         {
                             "type": "message",
@@ -45,7 +45,7 @@ class TestResponsesCreate:
         )
 
         response = client.responses.create(
-            model="gpt-5-pro",
+            model="gpt-5.4",
             input="Hello!",
         )
 
@@ -65,7 +65,7 @@ class TestResponsesCreate:
                     "object": "response",
                     "created_at": 1234567890,
                     "status": "completed",
-                    "model": "gpt-5-pro",
+                    "model": "gpt-5.4",
                     "output": [
                         {
                             "type": "message",
@@ -80,7 +80,7 @@ class TestResponsesCreate:
         )
 
         response = client.responses.create(
-            model="gpt-5-pro",
+            model="gpt-5.4",
             input="Tell me about Python",
             instructions="Be brief and concise.",
             max_output_tokens=100,
@@ -99,7 +99,7 @@ class TestResponsesCreate:
                     "object": "response",
                     "created_at": 1234567890,
                     "status": "completed",
-                    "model": "gpt-5-pro",
+                    "model": "gpt-5.4",
                     "output": [
                         {
                             "type": "message",
@@ -114,7 +114,7 @@ class TestResponsesCreate:
         )
 
         response = client.responses.create(
-            model="gpt-5-pro",
+            model="gpt-5.4",
             input=[
                 {
                     "type": "message",
@@ -147,7 +147,7 @@ class TestResponsesCreate:
                     "object": "response",
                     "created_at": 1234567890,
                     "status": "completed",
-                    "model": "o1-pro",
+                    "model": "gpt-5.4",
                     "output": [
                         {
                             "type": "message",
@@ -168,7 +168,7 @@ class TestResponsesCreate:
         )
 
         response = client.responses.create(
-            model="o1-pro",
+            model="gpt-5.4",
             input="What is the meaning of life?",
             reasoning={"effort": "high"},
         )

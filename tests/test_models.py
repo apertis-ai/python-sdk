@@ -22,13 +22,13 @@ class TestModelsList:
                     "object": "list",
                     "data": [
                         {
-                            "id": "gpt-5.2",
+                            "id": "gpt-5.4",
                             "object": "model",
                             "created": 1234567890,
                             "owned_by": "openai",
                         },
                         {
-                            "id": "claude-sonnet-4.5",
+                            "id": "claude-sonnet-4-6",
                             "object": "model",
                             "created": 1234567890,
                             "owned_by": "anthropic",
@@ -48,8 +48,8 @@ class TestModelsList:
 
         assert model_list.object == "list"
         assert len(model_list.data) == 3
-        assert model_list.data[0].id == "gpt-5.2"
-        assert model_list.data[1].id == "claude-sonnet-4.5"
+        assert model_list.data[0].id == "gpt-5.4"
+        assert model_list.data[1].id == "claude-sonnet-4-6"
 
     @respx.mock
     def test_list_models_empty(self, client: Apertis) -> None:
@@ -76,11 +76,11 @@ class TestModelsRetrieve:
     @respx.mock
     def test_retrieve_model(self, client: Apertis) -> None:
         """Test retrieving a specific model."""
-        respx.get("https://api.apertis.ai/v1/models/gpt-5.2").mock(
+        respx.get("https://api.apertis.ai/v1/models/gpt-5.4").mock(
             return_value=httpx.Response(
                 200,
                 json={
-                    "id": "gpt-5.2",
+                    "id": "gpt-5.4",
                     "object": "model",
                     "created": 1234567890,
                     "owned_by": "openai",
@@ -88,9 +88,9 @@ class TestModelsRetrieve:
             )
         )
 
-        model = client.models.retrieve("gpt-5.2")
+        model = client.models.retrieve("gpt-5.4")
 
-        assert model.id == "gpt-5.2"
+        assert model.id == "gpt-5.4"
         assert model.object == "model"
         assert model.owned_by == "openai"
 

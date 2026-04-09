@@ -229,7 +229,7 @@ class TestMessagesCompression:
                     "type": "message",
                     "role": "assistant",
                     "content": [{"type": "text", "text": "Hello!"}],
-                    "model": "claude-sonnet-4.5",
+                    "model": "claude-sonnet-4-6",
                     "stop_reason": "end_turn",
                     "stop_sequence": None,
                     "usage": {
@@ -241,7 +241,7 @@ class TestMessagesCompression:
         )
 
         client.messages.create(
-            model="claude-sonnet-4.5",
+            model="claude-sonnet-4-6",
             messages=[{"role": "user", "content": "Hello!"}],
             max_tokens=1024,
             compression={

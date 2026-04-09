@@ -23,7 +23,7 @@ class TestChatCompletions:
                     "id": "chatcmpl-123",
                     "object": "chat.completion",
                     "created": 1234567890,
-                    "model": "gpt-5.2",
+                    "model": "gpt-5.4",
                     "choices": [
                         {
                             "index": 0,
@@ -44,7 +44,7 @@ class TestChatCompletions:
         )
 
         response = client.chat.completions.create(
-            model="gpt-5.2",
+            model="gpt-5.4",
             messages=[{"role": "user", "content": "Hello!"}],
         )
 
@@ -66,7 +66,7 @@ class TestChatCompletions:
                     "id": "chatcmpl-123",
                     "object": "chat.completion",
                     "created": 1234567890,
-                    "model": "gpt-5.2",
+                    "model": "gpt-5.4",
                     "choices": [
                         {
                             "index": 0,
@@ -97,7 +97,7 @@ class TestChatCompletions:
         )
 
         response = client.chat.completions.create(
-            model="gpt-5.2",
+            model="gpt-5.4",
             messages=[{"role": "user", "content": "What's the weather in Tokyo?"}],
             tools=[
                 {
@@ -130,7 +130,7 @@ class TestChatCompletions:
                     "id": "chatcmpl-123",
                     "object": "chat.completion",
                     "created": 1234567890,
-                    "model": "gpt-5.2",
+                    "model": "gpt-5.4",
                     "choices": [
                         {
                             "index": 0,
@@ -143,7 +143,7 @@ class TestChatCompletions:
         )
 
         response = client.chat.completions.create(
-            model="gpt-5.2",
+            model="gpt-5.4",
             messages=[{"role": "user", "content": "Hello"}],
             temperature=0.5,
             max_tokens=100,

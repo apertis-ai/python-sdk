@@ -6,7 +6,7 @@ Example:
     >>> from apertis import Apertis
     >>> client = Apertis()
     >>> response = client.chat.completions.create(
-    ...     model="gpt-5.2",
+    ...     model="gpt-5.4",
     ...     messages=[{"role": "user", "content": "Hello!"}]
     ... )
     >>> print(response.choices[0].message.content)

@@ -36,7 +36,7 @@ class Messages:
         """Create a message using Anthropic's native format.
 
         Args:
-            model: ID of the model to use (e.g., "claude-sonnet-4.5").
+            model: ID of the model to use (e.g., "claude-sonnet-4-6").
             messages: List of messages in the conversation.
             max_tokens: Maximum tokens to generate.
             system: System prompt.

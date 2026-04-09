@@ -32,7 +32,7 @@ class TestErrorHandling:
 
         with pytest.raises(AuthenticationError) as exc_info:
             client.chat.completions.create(
-                model="gpt-5.2",
+                model="gpt-5.4",
                 messages=[{"role": "user", "content": "Hello"}],
             )
 
@@ -56,7 +56,7 @@ class TestErrorHandling:
 
         with pytest.raises(RateLimitError) as exc_info:
             client_no_retry.chat.completions.create(
-                model="gpt-5.2",
+                model="gpt-5.4",
                 messages=[{"role": "user", "content": "Hello"}],
             )
 
@@ -98,7 +98,7 @@ class TestErrorHandling:
 
         with pytest.raises(InternalServerError) as exc_info:
             client_no_retry.chat.completions.create(
-                model="gpt-5.2",
+                model="gpt-5.4",
                 messages=[{"role": "user", "content": "Hello"}],
             )
 
@@ -117,7 +117,7 @@ class TestErrorHandling:
 
         with pytest.raises(APIError) as exc_info:
             client.chat.completions.create(
-                model="gpt-5.2",
+                model="gpt-5.4",
                 messages=[{"role": "user", "content": "Hello"}],
             )
 

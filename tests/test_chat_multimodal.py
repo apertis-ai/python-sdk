@@ -22,7 +22,7 @@ class TestImageContentPart:
                     "id": "chatcmpl-123",
                     "object": "chat.completion",
                     "created": 1234567890,
-                    "model": "gpt-4o",
+                    "model": "gpt-5.4",
                     "choices": [
                         {
                             "index": 0,
@@ -43,7 +43,7 @@ class TestImageContentPart:
         )
 
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-5.4",
             messages=[
                 {
                     "role": "user",
@@ -74,7 +74,7 @@ class TestCreateWithImage:
                     "id": "chatcmpl-123",
                     "object": "chat.completion",
                     "created": 1234567890,
-                    "model": "gpt-4o",
+                    "model": "gpt-5.4",
                     "choices": [
                         {
                             "index": 0,
@@ -90,7 +90,7 @@ class TestCreateWithImage:
         )
 
         response = client.chat.completions.create_with_image(
-            model="gpt-4o",
+            model="gpt-5.4",
             prompt="What is this?",
             image="https://example.com/dog.jpg",
         )
@@ -101,7 +101,7 @@ class TestCreateWithImage:
         import json
         request = route.calls.last.request
         data = json.loads(request.content)
-        assert data["model"] == "gpt-4o"
+        assert data["model"] == "gpt-5.4"
         assert len(data["messages"]) == 1
         assert data["messages"][0]["role"] == "user"
 
@@ -115,7 +115,7 @@ class TestCreateWithImage:
                     "id": "chatcmpl-123",
                     "object": "chat.completion",
                     "created": 1234567890,
-                    "model": "gpt-4o",
+                    "model": "gpt-5.4",
                     "choices": [
                         {
                             "index": 0,
@@ -131,7 +131,7 @@ class TestCreateWithImage:
         )
 
         response = client.chat.completions.create_with_image(
-            model="gpt-4o",
+            model="gpt-5.4",
             prompt="What are these?",
             image=["https://example.com/cat.jpg", "https://example.com/dog.jpg"],
         )
@@ -148,7 +148,7 @@ class TestCreateWithImage:
                     "id": "chatcmpl-123",
                     "object": "chat.completion",
                     "created": 1234567890,
-                    "model": "gpt-4o",
+                    "model": "gpt-5.4",
                     "choices": [
                         {
                             "index": 0,
@@ -164,7 +164,7 @@ class TestCreateWithImage:
         )
 
         response = client.chat.completions.create_with_image(
-            model="gpt-4o",
+            model="gpt-5.4",
             prompt="What is this?",
             image="https://example.com/cat.jpg",
             system="Be brief.",
@@ -233,7 +233,7 @@ class TestAudioContentPart:
                     "id": "chatcmpl-123",
                     "object": "chat.completion",
                     "created": 1234567890,
-                    "model": "gpt-4o-audio-preview",
+                    "model": "gpt-5.4",
                     "choices": [
                         {
                             "index": 0,
@@ -249,7 +249,7 @@ class TestAudioContentPart:
         )
 
         response = client.chat.completions.create(
-            model="gpt-4o-audio-preview",
+            model="gpt-5.4",
             messages=[
                 {
                     "role": "user",
@@ -283,7 +283,7 @@ class TestAudioOutput:
                     "id": "chatcmpl-123",
                     "object": "chat.completion",
                     "created": 1234567890,
-                    "model": "gpt-4o-audio-preview",
+                    "model": "gpt-5.4",
                     "choices": [
                         {
                             "index": 0,
@@ -305,7 +305,7 @@ class TestAudioOutput:
         )
 
         response = client.chat.completions.create(
-            model="gpt-4o-audio-preview",
+            model="gpt-5.4",
             messages=[{"role": "user", "content": "Say hello"}],
             modalities=["text", "audio"],
             audio={"voice": "alloy", "format": "wav"},

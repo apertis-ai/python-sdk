@@ -23,7 +23,7 @@ class TestMessagesCreate:
                     "type": "message",
                     "role": "assistant",
                     "content": [{"type": "text", "text": "Hello! How can I help?"}],
-                    "model": "claude-sonnet-4.5",
+                    "model": "claude-sonnet-4-6",
                     "stop_reason": "end_turn",
                     "usage": {"input_tokens": 10, "output_tokens": 8},
                 },
@@ -31,7 +31,7 @@ class TestMessagesCreate:
         )
 
         message = client.messages.create(
-            model="claude-sonnet-4.5",
+            model="claude-sonnet-4-6",
             messages=[{"role": "user", "content": "Hello!"}],
             max_tokens=1024,
         )
@@ -52,7 +52,7 @@ class TestMessagesCreate:
                     "type": "message",
                     "role": "assistant",
                     "content": [{"type": "text", "text": "Brief response."}],
-                    "model": "claude-sonnet-4.5",
+                    "model": "claude-sonnet-4-6",
                     "stop_reason": "end_turn",
                     "usage": {"input_tokens": 15, "output_tokens": 5},
                 },
@@ -60,7 +60,7 @@ class TestMessagesCreate:
         )
 
         message = client.messages.create(
-            model="claude-sonnet-4.5",
+            model="claude-sonnet-4-6",
             messages=[{"role": "user", "content": "Tell me about Python"}],
             max_tokens=1024,
             system="Be brief and concise.",
@@ -86,7 +86,7 @@ class TestMessagesCreate:
                             "input": {"location": "Tokyo"},
                         }
                     ],
-                    "model": "claude-sonnet-4.5",
+                    "model": "claude-sonnet-4-6",
                     "stop_reason": "tool_use",
                     "usage": {"input_tokens": 50, "output_tokens": 20},
                 },
@@ -94,7 +94,7 @@ class TestMessagesCreate:
         )
 
         message = client.messages.create(
-            model="claude-sonnet-4.5",
+            model="claude-sonnet-4-6",
             messages=[{"role": "user", "content": "What's the weather in Tokyo?"}],
             max_tokens=1024,
             tools=[
@@ -128,7 +128,7 @@ class TestMessagesCreate:
                     "type": "message",
                     "role": "assistant",
                     "content": [{"type": "text", "text": "It is a programming language."}],
-                    "model": "claude-sonnet-4.5",
+                    "model": "claude-sonnet-4-6",
                     "stop_reason": "end_turn",
                     "usage": {"input_tokens": 30, "output_tokens": 10},
                 },
@@ -136,7 +136,7 @@ class TestMessagesCreate:
         )
 
         message = client.messages.create(
-            model="claude-sonnet-4.5",
+            model="claude-sonnet-4-6",
             messages=[
                 {"role": "user", "content": "What is Python?"},
                 {"role": "assistant", "content": "Python is a programming language."},
@@ -158,7 +158,7 @@ class TestMessagesCreate:
                     "type": "message",
                     "role": "assistant",
                     "content": [{"type": "text", "text": "I see a cat in the image."}],
-                    "model": "claude-sonnet-4.5",
+                    "model": "claude-sonnet-4-6",
                     "stop_reason": "end_turn",
                     "usage": {"input_tokens": 100, "output_tokens": 10},
                 },
@@ -166,7 +166,7 @@ class TestMessagesCreate:
         )
 
         message = client.messages.create(
-            model="claude-sonnet-4.5",
+            model="claude-sonnet-4-6",
             messages=[
                 {
                     "role": "user",

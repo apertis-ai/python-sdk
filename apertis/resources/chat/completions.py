@@ -281,7 +281,7 @@ class Completions:
         Handles base64 encoding automatically for local files.
 
         Args:
-            model: ID of the model to use (e.g., "gpt-4o", "gpt-4o-mini").
+            model: ID of the model to use (e.g., "gpt-5.4").
             prompt: Text prompt to accompany the image(s).
             image: Image URL(s) or local file path(s). Can be a single string
                    or a list of strings.
@@ -329,7 +329,7 @@ class Completions:
         Handles base64 encoding automatically for local files.
 
         Args:
-            model: ID of the model to use (e.g., "gpt-4o-audio-preview").
+            model: ID of the model to use (e.g., "gpt-5.4").
             prompt: Text prompt to accompany the audio.
             audio: Local path to audio file.
             audio_format: Audio format (auto-detected from extension if not provided).
