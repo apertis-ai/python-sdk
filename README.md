@@ -549,6 +549,14 @@ Any model available on [Apertis AI](https://apertis.ai), including:
 
 ## Changelog
 
+### v0.2.2
+- Updated model identifiers to latest versions (gpt-5.4, claude-opus-4-6, claude-sonnet-4-6, glm-5.1)
+- Added support for gpt-5.3-codex and minimax-m2.7 models
+- Removed deprecated model references (gpt-4o, o1-pro, gpt-5-pro)
+
+### v0.2.1
+- Fixed missing compression parameter in AsyncCompletions overloads
+
 ### v0.2.0
 - Added Vision/Image support with `create_with_image()` convenience method
 - Added Audio input/output support
