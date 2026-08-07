@@ -541,6 +541,13 @@ Any model available on [Apertis AI](https://apertis.ai), including:
 - httpx
 - pydantic
 
+## Publishing
+
+The repository publishes only from the manual **Publish to PyPI** workflow. Configure
+PyPI Trusted Publishing for the `apertis-ai/python-sdk` repository, workflow
+`.github/workflows/publish.yml`, and the `pypi` environment before dispatching it with
+the `publish` confirmation value.
+
 ## Changelog
 
 ### v0.3.0
