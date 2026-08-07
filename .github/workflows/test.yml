@@ -12,7 +12,7 @@ jobs:
   docker-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
       - name: Build test image
         run: docker build --tag apertis-sdk-test --file Dockerfile.test .
       - name: Run deterministic tests without network access
