@@ -41,6 +41,7 @@ from apertis.types import (
     ToolCall,
     Function,
     URLCitation,
+    WebSource,
     AudioData,
     # Content part types
     ContentPart,
@@ -82,7 +83,7 @@ from apertis.types import (
     Usage,
 )
 
-__version__ = "0.2.2"
+__version__ = "0.3.0"
 
 __all__ = [
     # Clients
@@ -112,6 +113,7 @@ __all__ = [
     "ToolCall",
     "Function",
     "URLCitation",
+    "WebSource",
     "AudioData",
     # Content part types
     "ContentPart",

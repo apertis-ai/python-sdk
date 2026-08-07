@@ -163,6 +163,14 @@ class URLCitation(BaseModel):
     title: Optional[str] = None
 
 
+class WebSource(BaseModel):
+    """Source returned by Apertis Web Search."""
+
+    title: str
+    url: str
+    snippet: str
+
+
 class AudioData(BaseModel):
     """Audio data in response."""
 
@@ -213,6 +221,7 @@ class ChatCompletion(BaseModel):
     choices: List[ChatCompletionChoice]
     usage: Optional[Usage] = None
     system_fingerprint: Optional[str] = None
+    web_sources: Optional[List[WebSource]] = None
 
 
 # =============================================================================
