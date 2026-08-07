@@ -2,15 +2,127 @@
 
 from __future__ import annotations
 
+import json
+
 import httpx
 import pytest
 import respx
 
-from apertis import Apertis
+from apertis import Apertis, AsyncApertis, WebSource
 
 
 class TestWebSearch:
     """Tests for web search functionality."""
+
+    @respx.mock
+    def test_current_web_search_contract_preserves_sources_and_body(self, client: Apertis) -> None:
+        """Send the documented Web Search fields and retain returned sources."""
+        route = respx.post("https://api.apertis.ai/v1/chat/completions").mock(
+            return_value=httpx.Response(
+                200,
+                json={
+                    "id": "chatcmpl-web-123",
+                    "object": "chat.completion",
+                    "created": 1234567890,
+                    "model": "gpt-5.5",
+                    "choices": [
+                        {
+                            "index": 0,
+                            "message": {
+                                "role": "assistant",
+                                "content": "Apertis found these sources.",
+                            },
+                            "finish_reason": "stop",
+                        }
+                    ],
+                    "web_sources": [
+                        {
+                            "title": "Apertis documentation",
+                            "url": "https://docs.apertis.ai",
+                            "snippet": "Current API reference.",
+                        }
+                    ],
+                },
+            )
+        )
+
+        response = client.chat.completions.create(
+            model="gpt-5.5:web",
+            messages=[{"role": "user", "content": "What changed?"}],
+            web_results_count=7,
+            web_content_length="full",
+        )
+
+        assert route.called
+        request_body = json.loads(route.calls.last.request.content)
+        assert request_body["model"] == "gpt-5.5:web"
+        assert request_body["web_results_count"] == 7
+        assert request_body["web_content_length"] == "full"
+        assert response.web_sources is not None
+        assert isinstance(response.web_sources[0], WebSource)
+        assert response.web_sources[0].url == "https://docs.apertis.ai"
+
+    def test_current_and_legacy_web_search_forms_conflict(self, client: Apertis) -> None:
+        """Reject incompatible documented and legacy Web Search options locally."""
+        with pytest.raises(ValueError, match="web_search_options"):
+            client.chat.completions.create(
+                model="gpt-5.5:web",
+                messages=[{"role": "user", "content": "What changed?"}],
+                web_search_options={"search_context_size": "medium"},
+                web_results_count=5,
+            )
+
+    @pytest.mark.parametrize("web_results_count", [0, 11])
+    def test_web_search_result_count_is_validated_locally(
+        self, client: Apertis, web_results_count: int
+    ) -> None:
+        """Reject counts outside the documented one-to-ten range."""
+        with pytest.raises(ValueError, match="web_results_count"):
+            client.chat.completions.create(
+                model="gpt-5.5:web",
+                messages=[{"role": "user", "content": "What changed?"}],
+                web_results_count=web_results_count,
+            )
+
+    @respx.mock
+    async def test_async_current_web_search_contract(self, async_client: AsyncApertis) -> None:
+        """Async requests use the same documented Web Search contract."""
+        route = respx.post("https://api.apertis.ai/v1/chat/completions").mock(
+            return_value=httpx.Response(
+                200,
+                json={
+                    "id": "chatcmpl-web-async",
+                    "object": "chat.completion",
+                    "created": 1234567890,
+                    "model": "gpt-5.5",
+                    "choices": [
+                        {
+                            "index": 0,
+                            "message": {"role": "assistant", "content": "Done."},
+                            "finish_reason": "stop",
+                        }
+                    ],
+                    "web_sources": [
+                        {
+                            "title": "Apertis documentation",
+                            "url": "https://docs.apertis.ai",
+                            "snippet": "Current API reference.",
+                        }
+                    ],
+                },
+            )
+        )
+
+        response = await async_client.chat.completions.create(
+            model="gpt-5.5:web",
+            messages=[{"role": "user", "content": "What changed?"}],
+            web_results_count=5,
+            web_content_length="medium",
+        )
+
+        assert route.called
+        assert response.web_sources is not None
+        assert response.web_sources[0].title == "Apertis documentation"
 
     @respx.mock
     def test_web_search_options(self, client: Apertis) -> None:
@@ -263,11 +375,7 @@ class TestExtendedThinking:
         response = client.chat.completions.create(
             model="gemini-3-pro-preview",
             messages=[{"role": "user", "content": "Think deeply about this"}],
-            extra_body={
-                "google": {
-                    "thinking_config": {"thinking_budget": 10240}
-                }
-            },
+            extra_body={"google": {"thinking_config": {"thinking_budget": 10240}}},
         )
 
         assert response.choices[0].message.content is not None

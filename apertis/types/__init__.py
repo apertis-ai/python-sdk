@@ -13,6 +13,7 @@ from apertis.types.chat import (
     ToolCall,
     Function,
     URLCitation,
+    WebSource,
     AudioData,
     # Request parameter types
     ChatCompletionMessageParam,
@@ -84,6 +85,7 @@ __all__ = [
     "ToolCall",
     "Function",
     "URLCitation",
+    "WebSource",
     "AudioData",
     # Chat - Request parameter types
     "ChatCompletionMessageParam",

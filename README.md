@@ -156,30 +156,24 @@ print(response.choices[0].message.audio.transcript)
 
 ### Web Search
 
-Enable real-time web search for up-to-date information:
+Enable real-time web search for a non-free model by appending `:web` to its model ID.
+Use the documented result-count and content-length fields, then read the returned sources:
 
 ```python
-# Using convenience method
-response = client.chat.completions.create_with_web_search(
-    prompt="What are the latest news about AI?",
-    context_size="high",
-    country="US",
-)
-
-# Check citations
-for annotation in response.choices[0].message.annotations or []:
-    print(f"Source: {annotation.url}")
-
-# Using standard API
 response = client.chat.completions.create(
-    model="gpt-5-search-api",
+    model="gpt-5.5:web",
     messages=[{"role": "user", "content": "Latest Python releases?"}],
-    web_search_options={
-        "search_context_size": "medium",
-        "filters": ["python.org", "github.com"],
-    },
+    web_results_count=5,
+    web_content_length="medium",
 )
+
+for source in response.web_sources or []:
+    print(f"{source.title}: {source.url}")
 ```
+
+The legacy `web_search_options` argument and message-level `annotations` remain
+available for existing clients. Do not combine the legacy options with
+`web_results_count` or `web_content_length` in one request.
 
 ### Reasoning Mode
 
@@ -547,7 +541,18 @@ Any model available on [Apertis AI](https://apertis.ai), including:
 - httpx
 - pydantic
 
+## Publishing
+
+The repository publishes only from the manual **Publish to PyPI** workflow. Configure
+PyPI Trusted Publishing for the `apertis-ai/python-sdk` repository, workflow
+`.github/workflows/publish.yml`, and the `pypi` environment before dispatching it with
+the `publish` confirmation value.
+
 ## Changelog
+
+### v0.3.0
+- Add the current Apertis Web Search request fields and typed top-level sources while
+  retaining legacy Web Search options for compatibility.
 
 ### v0.2.2
 - Updated model identifiers to latest versions (gpt-5.4, claude-opus-4-6, claude-sonnet-4-6, glm-5.1)

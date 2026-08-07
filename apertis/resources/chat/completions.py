@@ -61,6 +61,8 @@ class Completions:
         audio: AudioConfig | None = None,
         # Web search
         web_search_options: WebSearchOptions | None = None,
+        web_results_count: int | None = None,
+        web_content_length: Literal["short", "medium", "full"] | None = None,
         # Reasoning mode
         reasoning: ReasoningConfig | None = None,
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
@@ -101,6 +103,8 @@ class Completions:
         audio: AudioConfig | None = None,
         # Web search
         web_search_options: WebSearchOptions | None = None,
+        web_results_count: int | None = None,
+        web_content_length: Literal["short", "medium", "full"] | None = None,
         # Reasoning mode
         reasoning: ReasoningConfig | None = None,
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
@@ -141,6 +145,8 @@ class Completions:
         audio: AudioConfig | None = None,
         # Web search
         web_search_options: WebSearchOptions | None = None,
+        web_results_count: int | None = None,
+        web_content_length: Literal["short", "medium", "full"] | None = None,
         # Reasoning mode
         reasoning: ReasoningConfig | None = None,
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
@@ -180,6 +186,8 @@ class Completions:
         audio: AudioConfig | None = None,
         # Web search
         web_search_options: WebSearchOptions | None = None,
+        web_results_count: int | None = None,
+        web_content_length: Literal["short", "medium", "full"] | None = None,
         # Reasoning mode
         reasoning: ReasoningConfig | None = None,
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
@@ -247,6 +255,8 @@ class Completions:
             modalities=modalities,
             audio=audio,
             web_search_options=web_search_options,
+            web_results_count=web_results_count,
+            web_content_length=web_content_length,
             reasoning=reasoning,
             reasoning_effort=reasoning_effort,
             thinking=thinking,
@@ -299,10 +309,12 @@ class Completions:
         content: List[ContentPart] = [{"type": "text", "text": prompt}]
         for img in images:
             image_url = normalize_image_input(img)
-            content.append({
-                "type": "image_url",
-                "image_url": {"url": image_url, "detail": detail},
-            })
+            content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {"url": image_url, "detail": detail},
+                }
+            )
 
         # Build messages
         messages: List[ChatCompletionMessageParam] = []
@@ -460,6 +472,8 @@ class AsyncCompletions:
         modalities: Sequence[Literal["text", "audio"]] | None = None,
         audio: AudioConfig | None = None,
         web_search_options: WebSearchOptions | None = None,
+        web_results_count: int | None = None,
+        web_content_length: Literal["short", "medium", "full"] | None = None,
         reasoning: ReasoningConfig | None = None,
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
         thinking: ThinkingConfig | None = None,
@@ -493,6 +507,8 @@ class AsyncCompletions:
         modalities: Sequence[Literal["text", "audio"]] | None = None,
         audio: AudioConfig | None = None,
         web_search_options: WebSearchOptions | None = None,
+        web_results_count: int | None = None,
+        web_content_length: Literal["short", "medium", "full"] | None = None,
         reasoning: ReasoningConfig | None = None,
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
         thinking: ThinkingConfig | None = None,
@@ -526,6 +542,8 @@ class AsyncCompletions:
         modalities: Sequence[Literal["text", "audio"]] | None = None,
         audio: AudioConfig | None = None,
         web_search_options: WebSearchOptions | None = None,
+        web_results_count: int | None = None,
+        web_content_length: Literal["short", "medium", "full"] | None = None,
         reasoning: ReasoningConfig | None = None,
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
         thinking: ThinkingConfig | None = None,
@@ -558,6 +576,8 @@ class AsyncCompletions:
         modalities: Sequence[Literal["text", "audio"]] | None = None,
         audio: AudioConfig | None = None,
         web_search_options: WebSearchOptions | None = None,
+        web_results_count: int | None = None,
+        web_content_length: Literal["short", "medium", "full"] | None = None,
         reasoning: ReasoningConfig | None = None,
         reasoning_effort: Literal["low", "medium", "high"] | None = None,
         thinking: ThinkingConfig | None = None,
@@ -591,6 +611,8 @@ class AsyncCompletions:
             modalities=modalities,
             audio=audio,
             web_search_options=web_search_options,
+            web_results_count=web_results_count,
+            web_content_length=web_content_length,
             reasoning=reasoning,
             reasoning_effort=reasoning_effort,
             thinking=thinking,
@@ -628,10 +650,12 @@ class AsyncCompletions:
         content: List[ContentPart] = [{"type": "text", "text": prompt}]
         for img in images:
             image_url = normalize_image_input(img)
-            content.append({
-                "type": "image_url",
-                "image_url": {"url": image_url, "detail": detail},
-            })
+            content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {"url": image_url, "detail": detail},
+                }
+            )
 
         messages: List[ChatCompletionMessageParam] = []
         if system:
@@ -754,6 +778,8 @@ def _build_request_body(
     modalities: Sequence[Literal["text", "audio"]] | None,
     audio: AudioConfig | None,
     web_search_options: WebSearchOptions | None,
+    web_results_count: int | None,
+    web_content_length: Literal["short", "medium", "full"] | None,
     reasoning: ReasoningConfig | None,
     reasoning_effort: Literal["low", "medium", "high"] | None,
     thinking: ThinkingConfig | None,
@@ -806,9 +832,25 @@ def _build_request_body(
     if audio is not None:
         body["audio"] = audio
 
-    # Web search
+    # Web search. The legacy OpenAI-style object and the current Apertis fields
+    # describe incompatible server contracts, so make callers choose explicitly.
+    if web_search_options is not None and (
+        web_results_count is not None or web_content_length is not None
+    ):
+        msg = "web_search_options cannot be combined with web_results_count or web_content_length."
+        raise ValueError(msg)
     if web_search_options is not None:
         body["web_search_options"] = web_search_options
+    if web_results_count is not None:
+        if not 1 <= web_results_count <= 10:
+            msg = "web_results_count must be between 1 and 10."
+            raise ValueError(msg)
+        body["web_results_count"] = web_results_count
+    if web_content_length is not None:
+        if web_content_length not in {"short", "medium", "full"}:
+            msg = "web_content_length must be one of: short, medium, full."
+            raise ValueError(msg)
+        body["web_content_length"] = web_content_length
 
     # Reasoning mode
     if reasoning is not None:
