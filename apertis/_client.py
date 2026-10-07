@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Mapping
 
 from apertis._base_client import AsyncClient, SyncClient
+from apertis.resources.audio import AsyncAudio, Audio
 from apertis.resources.chat import AsyncChat, Chat
 from apertis.resources.embeddings import AsyncEmbeddings, Embeddings
 from apertis.resources.models import AsyncModels, Models
@@ -58,6 +59,7 @@ class Apertis:
         self.responses = Responses(self._client)
         self.messages = Messages(self._client)
         self.rerank = Rerank(self._client)
+        self.audio = Audio(self._client)
 
     def close(self) -> None:
         """Close the underlying HTTP client."""
@@ -115,6 +117,7 @@ class AsyncApertis:
         self.responses = AsyncResponses(self._client)
         self.messages = AsyncMessages(self._client)
         self.rerank = AsyncRerank(self._client)
+        self.audio = AsyncAudio(self._client)
 
     async def close(self) -> None:
         """Close the underlying HTTP client."""

@@ -71,10 +71,20 @@ class SyncClient(BaseClient):
         json: Optional[Dict[str, Any]] = None,
         headers: Optional[Mapping[str, str]] = None,
         stream: bool = False,
+        data: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
     ) -> httpx.Response:
-        """Make an HTTP request."""
+        """Make an HTTP request.
+
+        With `files`, the body is multipart/form-data built from `data` and `files`;
+        file contents must already be bytes so a retry resends them unchanged.
+        """
         url = self._build_url(path)
         request_headers = self._build_headers(headers)
+        if files is not None:
+            # httpx sets the multipart content type with its boundary.
+            for key in [k for k in request_headers if k.lower() == "content-type"]:
+                del request_headers[key]
 
         retries = 0
         last_exception: Optional[Exception] = None
@@ -85,6 +95,8 @@ class SyncClient(BaseClient):
                     method,
                     url,
                     json=json,
+                    data=data,
+                    files=files,
                     headers=request_headers,
                     extensions={"stream": stream} if stream else None,
                 )
@@ -196,10 +208,20 @@ class AsyncClient(BaseClient):
         json: Optional[Dict[str, Any]] = None,
         headers: Optional[Mapping[str, str]] = None,
         stream: bool = False,
+        data: Optional[Dict[str, Any]] = None,
+        files: Optional[Dict[str, Any]] = None,
     ) -> httpx.Response:
-        """Make an HTTP request."""
+        """Make an HTTP request.
+
+        With `files`, the body is multipart/form-data built from `data` and `files`;
+        file contents must already be bytes so a retry resends them unchanged.
+        """
         url = self._build_url(path)
         request_headers = self._build_headers(headers)
+        if files is not None:
+            # httpx sets the multipart content type with its boundary.
+            for key in [k for k in request_headers if k.lower() == "content-type"]:
+                del request_headers[key]
 
         retries = 0
         last_exception: Optional[Exception] = None
@@ -210,6 +232,8 @@ class AsyncClient(BaseClient):
                     method,
                     url,
                     json=json,
+                    data=data,
+                    files=files,
                     headers=request_headers,
                     extensions={"stream": stream} if stream else None,
                 )
