@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Type, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, field_validator
 from typing_extensions import TypedDict, Required, NotRequired
 
 
@@ -13,31 +13,92 @@ from typing_extensions import TypedDict, Required, NotRequired
 # =============================================================================
 
 
+class ResponseOutputText(BaseModel):
+    """Text part of an output message."""
+
+    type: Literal["output_text"]
+    text: str
+    annotations: List[Dict[str, Any]] = []
+
+
+class ResponseOutputRefusal(BaseModel):
+    """Refusal part of an output message."""
+
+    type: Literal["refusal"]
+    refusal: str
+
+
 class ResponseTextContent(BaseModel):
-    """Text content in a response."""
+    """Legacy text part; current responses use ResponseOutputText."""
 
     type: Literal["text"]
     text: str
 
 
 class ResponseReasoningContent(BaseModel):
-    """Reasoning content in a response (for thinking models)."""
+    """Legacy reasoning part; current responses use ResponseReasoningItem."""
 
     type: Literal["reasoning"]
     summary: Optional[List[Dict[str, Any]]] = None
 
 
-ResponseContent = Union[ResponseTextContent, ResponseReasoningContent]
+ResponseContent = Union[
+    ResponseOutputText, ResponseOutputRefusal, ResponseTextContent, ResponseReasoningContent
+]
 
 
 class ResponseOutput(BaseModel):
-    """Output item in a response."""
+    """Assistant message item in a response's output."""
 
     type: Literal["message"]
     id: str
-    status: Literal["completed", "incomplete", "cancelled"]
+    status: Literal["in_progress", "completed", "incomplete", "cancelled"]
     role: Literal["assistant"]
     content: List[ResponseContent]
+
+
+ResponseOutputMessage = ResponseOutput
+
+
+class ResponseReasoningItem(BaseModel):
+    """Reasoning item emitted by reasoning models."""
+
+    type: Literal["reasoning"]
+    id: str
+    summary: List[Dict[str, Any]] = []
+    content: Optional[List[Dict[str, Any]]] = None
+    encrypted_content: Optional[str] = None
+    status: Optional[Literal["in_progress", "completed", "incomplete"]] = None
+
+
+class ResponseFunctionToolCall(BaseModel):
+    """Function call the model asks the caller to run."""
+
+    type: Literal["function_call"]
+    call_id: str
+    name: str
+    arguments: str
+    id: Optional[str] = None
+    status: Optional[Literal["in_progress", "completed", "incomplete"]] = None
+
+
+class ResponseUnknownOutputItem(BaseModel):
+    """Output item of a type this SDK does not model; all fields are kept."""
+
+    model_config = ConfigDict(extra="allow")
+
+    type: str
+
+
+ResponseOutputItem = Union[
+    ResponseOutput, ResponseReasoningItem, ResponseFunctionToolCall, ResponseUnknownOutputItem
+]
+
+_OUTPUT_ITEM_TYPES: Dict[str, Type[BaseModel]] = {
+    "message": ResponseOutput,
+    "reasoning": ResponseReasoningItem,
+    "function_call": ResponseFunctionToolCall,
+}
 
 
 class ResponseUsage(BaseModel):
@@ -54,11 +115,36 @@ class Response(BaseModel):
     id: str
     object: Literal["response"]
     created_at: int
-    status: Literal["completed", "incomplete", "cancelled", "failed"]
+    status: Literal["queued", "in_progress", "completed", "incomplete", "cancelled", "failed"]
     model: str
-    output: List[ResponseOutput]
+    output: List[ResponseOutputItem]
     usage: Optional[ResponseUsage] = None
     error: Optional[Dict[str, Any]] = None
+
+    @field_validator("output", mode="before")
+    @classmethod
+    def _parse_output_items(cls, value: Any) -> Any:
+        # Dispatch on "type" so a malformed known item raises instead of
+        # degrading into an unknown one, and new item types are kept.
+        if not isinstance(value, list):
+            return value
+        return [
+            _OUTPUT_ITEM_TYPES.get(str(item.get("type")), ResponseUnknownOutputItem).model_validate(item)
+            if isinstance(item, dict)
+            else item
+            for item in value
+        ]
+
+    @property
+    def output_text(self) -> str:
+        """Concatenated text of every output_text part in the message items."""
+        return "".join(
+            part.text
+            for item in self.output
+            if isinstance(item, ResponseOutput)
+            for part in item.content
+            if isinstance(part, (ResponseOutputText, ResponseTextContent))
+        )
 
 
 # =============================================================================

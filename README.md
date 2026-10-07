@@ -414,7 +414,11 @@ response = client.responses.create(
     input="Write a haiku about programming",
 )
 
-print(response.output[0].content[0].text)
+print(response.output_text)
+
+# `output` also holds reasoning and function_call items, so iterate by type
+for item in response.output:
+    print(item.type)
 
 # With reasoning
 response = client.responses.create(
@@ -555,6 +559,10 @@ the `publish` confirmation value.
 ## Changelog
 
 ### Unreleased
+- Parse real Responses API output: `output_text` and `refusal` message parts,
+  `reasoning` and `function_call` items, and unmodelled item types (kept as
+  `ResponseUnknownOutputItem`). Add `Response.output_text` and the `queued` /
+  `in_progress` statuses.
 - Add `parallel_tool_calls` and `max_completion_tokens` to `chat.completions.create()`.
 - Mark `rerank.create()` as unavailable: it emits a `DeprecationWarning`, because the
   Apertis API does not serve `POST /v1/rerank`.
