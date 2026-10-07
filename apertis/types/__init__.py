@@ -38,6 +38,10 @@ from apertis.types.chat import (
     GeminiThinkingConfig,
     StreamOptions,
 )
+from apertis.types.audio import (
+    Transcription,
+    Translation,
+)
 from apertis.types.embeddings import (
     Embedding,
     EmbeddingResponse,
@@ -87,6 +91,9 @@ from apertis.types.shared import (
 )
 
 __all__ = [
+    # Audio
+    "Transcription",
+    "Translation",
     # Chat - Response types
     "ChatCompletion",
     "ChatCompletionChunk",

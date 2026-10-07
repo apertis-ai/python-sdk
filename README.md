@@ -39,6 +39,7 @@ print(response.choices[0].message.content)
 - **Embeddings**: Text embedding generation
 - **Vision/Image**: Analyze images with multimodal models
 - **Audio I/O**: Audio input and output support
+- **Audio API**: Text to speech, transcription and translation (`client.audio`)
 - **Video**: Video content analysis
 - **Web Search**: Real-time web search integration
 - **Context Compression**: Compress long conversation history to save tokens
@@ -152,6 +153,31 @@ response = client.chat.completions.create(
     audio={"voice": "alloy", "format": "wav"},
 )
 print(response.choices[0].message.audio.transcript)
+```
+
+### Speech, Transcription and Translation
+
+```python
+# Text to speech
+speech = client.audio.speech.create(
+    model="gpt-4o-mini-tts",
+    input="Hello from Apertis!",
+    voice="alloy",
+)
+speech.write_to_file("hello.mp3")
+
+# Speech to text: pass a path, an open file, bytes, or (filename, bytes)
+transcript = client.audio.transcriptions.create(file="meeting.mp3", model="whisper-1")
+print(transcript.text)
+
+# Subtitles come back as plain text
+srt = client.audio.transcriptions.create(
+    file="meeting.mp3", model="whisper-1", response_format="srt"
+)
+
+# Translate speech into English text
+translation = client.audio.translations.create(file="bonjour.m4a", model="whisper-1")
+print(translation.text)
 ```
 
 ### Web Search
@@ -581,6 +607,8 @@ the `publish` confirmation value.
 ## Changelog
 
 ### Unreleased
+- Add `client.audio`: `speech.create()` (binary audio with `write_to_file()`),
+  `transcriptions.create()` and `translations.create()` (multipart uploads).
 - Add `stream`, `thinking` and `extra_body` to `messages.create()`, with typed stream
   events and `thinking` / `redacted_thinking` content blocks.
 - Streamed requests that fail with an HTTP error now raise `APIError` (previously
