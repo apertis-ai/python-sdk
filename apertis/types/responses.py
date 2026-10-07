@@ -166,7 +166,41 @@ class ResponseInputImageContent(TypedDict, total=False):
     source: Required[Dict[str, Any]]  # {"type": "base64", "media_type": "...", "data": "..."}
 
 
-ResponseInputContent = Union[ResponseInputTextContent, ResponseInputImageContent]
+class ResponseInputText(TypedDict):
+    """Text part of a Responses API input message."""
+
+    type: Required[Literal["input_text"]]
+    text: Required[str]
+
+
+class ResponseInputImage(TypedDict, total=False):
+    """Image part of a Responses API input message: an ``image_url`` or a ``file_id``."""
+
+    type: Required[Literal["input_image"]]
+    image_url: str  # URL or data URL
+    file_id: str
+    detail: Literal["low", "high", "auto"]
+
+
+class ResponseInputFile(TypedDict, total=False):
+    """File part of a Responses API input message."""
+
+    type: Required[Literal["input_file"]]
+    file_id: str
+    file_data: str  # data URL, e.g. "data:application/pdf;base64,..."
+    file_url: str
+    filename: str
+
+
+# The first three are the Responses API part types; the last two are kept for
+# code written against SDK 0.4.0 and earlier.
+ResponseInputContent = Union[
+    ResponseInputText,
+    ResponseInputImage,
+    ResponseInputFile,
+    ResponseInputTextContent,
+    ResponseInputImageContent,
+]
 
 
 class ResponseInputItem(TypedDict, total=False):

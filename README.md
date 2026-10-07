@@ -468,6 +468,19 @@ print(response.output_text)
 for item in response.output:
     print(item.type)
 
+# Structured input uses the Responses API part types
+response = client.responses.create(
+    model="gpt-5.4",
+    input=[{
+        "type": "message",
+        "role": "user",
+        "content": [
+            {"type": "input_text", "text": "What is in this image?"},
+            {"type": "input_image", "image_url": "https://example.com/cat.png"},
+        ],
+    }],
+)
+
 # With reasoning
 response = client.responses.create(
     model="gpt-5.4",
@@ -605,6 +618,12 @@ PyPI Trusted Publishing for the `apertis-ai/python-sdk` repository, workflow
 the `publish` confirmation value.
 
 ## Changelog
+
+### Unreleased
+- Type Responses API input parts: `ResponseInputText` (`input_text`),
+  `ResponseInputImage` (`input_image`) and `ResponseInputFile` (`input_file`). The old
+  `text` / `image` part types still type-check.
+- Add `budget_tokens` to `ThinkingConfig`.
 
 ### v0.4.0
 - Add `client.audio`: `speech.create()` (binary audio with `write_to_file()`),
