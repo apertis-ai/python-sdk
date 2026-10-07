@@ -207,5 +207,5 @@ class ResponseInputItem(TypedDict, total=False):
     """Input item for responses."""
 
     type: Required[Literal["message"]]
-    role: Required[Literal["user", "assistant"]]
+    role: Required[Literal["user", "assistant", "system", "developer"]]
     content: Required[Union[str, List[ResponseInputContent]]]

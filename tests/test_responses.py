@@ -304,7 +304,7 @@ class TestResponsesOutputItems:
 
 
 class TestTypedInputParts:
-    """Spec part types type-check and are sent unchanged (checked by mypy too)."""
+    """Spec part types are accepted and sent unchanged."""
 
     @respx.mock
     def test_input_parts_sent_unchanged(self, client: Apertis) -> None:
