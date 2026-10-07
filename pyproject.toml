@@ -1,6 +1,6 @@
 [project]
 name = "apertis"
-version = "0.3.0"
+version = "0.4.0"
 description = "Official Python SDK for Apertis AI API"
 readme = "README.md"
 license = "Apache-2.0"
