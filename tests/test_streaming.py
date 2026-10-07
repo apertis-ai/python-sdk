@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import httpx
+import pytest
 import respx
 
-from apertis import Apertis, AsyncApertis
+from apertis import Apertis, APIError, AsyncApertis, NotFoundError
 
 
 WEB_SEARCH_STREAM = b"\n".join(
@@ -60,3 +61,31 @@ async def test_async_web_search_stream_status_is_not_dropped(
         "Web searching...\n\n",
         "Result",
     ]
+
+
+@respx.mock
+def test_sync_stream_http_error_raises_api_error(client: Apertis) -> None:
+    """An HTTP error on a streamed request surfaces as APIError, not httpx.ResponseNotRead."""
+    respx.post("https://api.apertis.ai/v1/chat/completions").mock(
+        return_value=httpx.Response(400, json={"error": {"message": "bad model"}})
+    )
+
+    with pytest.raises(APIError, match="bad model"):
+        client.chat.completions.create(
+            model="nope", messages=[{"role": "user", "content": "Hi"}], stream=True
+        )
+
+
+@respx.mock
+async def test_async_stream_http_error_raises_api_error(async_client: AsyncApertis) -> None:
+    respx.post("https://api.apertis.ai/v1/messages").mock(
+        return_value=httpx.Response(404, json={"error": {"message": "no such model"}})
+    )
+
+    with pytest.raises(NotFoundError, match="no such model"):
+        await async_client.messages.create(
+            model="nope",
+            messages=[{"role": "user", "content": "Hi"}],
+            max_tokens=16,
+            stream=True,
+        )

@@ -404,6 +404,28 @@ if message.stop_reason == "tool_use":
             print(f"Tool: {block.name}, Input: {block.input}")
 ```
 
+Streaming and extended thinking:
+
+```python
+stream = client.messages.create(
+    model="claude-sonnet-4-6",
+    messages=[{"role": "user", "content": "What is 27 * 453?"}],
+    max_tokens=4096,
+    thinking={"type": "enabled", "budget_tokens": 2048},
+    stream=True,
+)
+
+for event in stream:
+    if event.type == "content_block_delta":
+        if event.delta.type == "thinking_delta":
+            print(event.delta.thinking, end="")
+        elif event.delta.type == "text_delta":
+            print(event.delta.text, end="")
+```
+
+Without `stream`, thinking arrives as `thinking` blocks in `message.content`, before
+the text. `extra_body={...}` merges extra fields into the top level of the request.
+
 ### Responses API
 
 Use OpenAI Responses API format for advanced use cases:
@@ -559,6 +581,10 @@ the `publish` confirmation value.
 ## Changelog
 
 ### Unreleased
+- Add `stream`, `thinking` and `extra_body` to `messages.create()`, with typed stream
+  events and `thinking` / `redacted_thinking` content blocks.
+- Streamed requests that fail with an HTTP error now raise `APIError` (previously
+  `httpx.ResponseNotRead`).
 - Parse real Responses API output: `output_text` and `refusal` message parts,
   `reasoning` and `function_call` items, and unmodelled item types (kept as
   `ResponseUnknownOutputItem`). Add `Response.output_text` and the `queued` /

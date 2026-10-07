@@ -14,6 +14,7 @@ from apertis._streaming import AsyncStream, Stream
 from apertis.types.chat import (
     AudioConfig,
     ChatCompletion,
+    ChatCompletionChunk,
     ChatCompletionMessageParam,
     ChatCompletionToolParam,
     CompressionConfig,
@@ -76,7 +77,7 @@ class Completions:
         stream_options: StreamOptions | None = None,
         # Provider-specific params
         extra_body: dict[str, Any] | None = None,
-    ) -> Stream: ...
+    ) -> Stream[ChatCompletionChunk]: ...
 
     @overload
     def create(
@@ -164,7 +165,7 @@ class Completions:
         stream_options: StreamOptions | None = None,
         # Provider-specific params
         extra_body: dict[str, Any] | None = None,
-    ) -> ChatCompletion | Stream: ...
+    ) -> ChatCompletion | Stream[ChatCompletionChunk]: ...
 
     def create(
         self,
@@ -207,7 +208,7 @@ class Completions:
         stream_options: StreamOptions | None = None,
         # Provider-specific params
         extra_body: dict[str, Any] | None = None,
-    ) -> ChatCompletion | Stream:
+    ) -> ChatCompletion | Stream[ChatCompletionChunk]:
         """Create a chat completion.
 
         Args:
@@ -495,7 +496,7 @@ class AsyncCompletions:
         compression: CompressionConfig | None = None,
         stream_options: StreamOptions | None = None,
         extra_body: dict[str, Any] | None = None,
-    ) -> AsyncStream: ...
+    ) -> AsyncStream[ChatCompletionChunk]: ...
 
     @overload
     async def create(
@@ -569,7 +570,7 @@ class AsyncCompletions:
         compression: CompressionConfig | None = None,
         stream_options: StreamOptions | None = None,
         extra_body: dict[str, Any] | None = None,
-    ) -> ChatCompletion | AsyncStream: ...
+    ) -> ChatCompletion | AsyncStream[ChatCompletionChunk]: ...
 
     async def create(
         self,
@@ -605,7 +606,7 @@ class AsyncCompletions:
         compression: CompressionConfig | None = None,
         stream_options: StreamOptions | None = None,
         extra_body: dict[str, Any] | None = None,
-    ) -> ChatCompletion | AsyncStream:
+    ) -> ChatCompletion | AsyncStream[ChatCompletionChunk]:
         """Create a chat completion asynchronously.
 
         See Completions.create() for parameter documentation.

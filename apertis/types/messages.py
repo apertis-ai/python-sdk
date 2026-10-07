@@ -29,7 +29,34 @@ class ToolUseBlock(BaseModel):
     input: Dict[str, Any]
 
 
-ContentBlock = Union[TextBlock, ToolUseBlock]
+class ThinkingBlock(BaseModel):
+    """Extended thinking content block."""
+
+    type: Literal["thinking"]
+    thinking: str
+    # Empty in a stream's content_block_start; the signature arrives as a signature_delta.
+    signature: str = ""
+
+
+class RedactedThinkingBlock(BaseModel):
+    """Thinking content the provider returns encrypted."""
+
+    type: Literal["redacted_thinking"]
+    data: str
+
+
+ContentBlock = Union[TextBlock, ToolUseBlock, ThinkingBlock, RedactedThinkingBlock]
+
+
+StopReason = Literal[
+    "end_turn",
+    "max_tokens",
+    "stop_sequence",
+    "tool_use",
+    "pause_turn",
+    "refusal",
+    "model_context_window_exceeded",
+]
 
 
 class MessageUsage(BaseModel):
@@ -47,17 +74,33 @@ class Message(BaseModel):
     role: Literal["assistant"]
     content: List[ContentBlock]
     model: str
-    stop_reason: Optional[Literal["end_turn", "max_tokens", "stop_sequence", "tool_use"]] = None
+    stop_reason: Optional[StopReason] = None
     stop_sequence: Optional[str] = None
     usage: MessageUsage
 
 
 class MessageStreamDelta(BaseModel):
-    """Delta in a streaming message."""
+    """Delta in a stream event.
 
-    type: Literal["text_delta", "input_json_delta"]
+    content_block_delta deltas carry `type` (text_delta, input_json_delta,
+    thinking_delta, signature_delta) and the matching field; message_delta
+    deltas carry `stop_reason` and `stop_sequence` and have no `type`.
+    """
+
+    type: Optional[str] = None
     text: Optional[str] = None
     partial_json: Optional[str] = None
+    thinking: Optional[str] = None
+    signature: Optional[str] = None
+    stop_reason: Optional[StopReason] = None
+    stop_sequence: Optional[str] = None
+
+
+class MessageDeltaUsage(BaseModel):
+    """Cumulative usage sent with a message_delta event."""
+
+    output_tokens: int
+    input_tokens: Optional[int] = None
 
 
 class MessageStreamEvent(BaseModel):
@@ -75,6 +118,7 @@ class MessageStreamEvent(BaseModel):
     index: Optional[int] = None
     content_block: Optional[ContentBlock] = None
     delta: Optional[MessageStreamDelta] = None
+    usage: Optional[MessageDeltaUsage] = None
 
 
 # =============================================================================
