@@ -71,6 +71,11 @@ from apertis.types.messages import (
     TextBlock,
     ToolUseBlock,
     ToolDefinition,
+    ThinkingBlock,
+    RedactedThinkingBlock,
+    MessageStreamEvent,
+    MessageStreamDelta,
+    MessageDeltaUsage,
 )
 from apertis.types.rerank import (
     RerankResponse,
@@ -146,6 +151,11 @@ __all__ = [
     "TextBlock",
     "ToolUseBlock",
     "ToolDefinition",
+    "ThinkingBlock",
+    "RedactedThinkingBlock",
+    "MessageStreamEvent",
+    "MessageStreamDelta",
+    "MessageDeltaUsage",
     # Rerank API
     "RerankResponse",
     "RerankResult",

@@ -130,7 +130,6 @@ class SyncClient(BaseClient):
         headers: Optional[Mapping[str, str]] = None,
     ) -> httpx.Response:
         """Make a streaming HTTP request."""
-        import json as json_lib
         url = self._build_url(path)
         request_headers = self._build_headers(headers)
 
@@ -145,6 +144,7 @@ class SyncClient(BaseClient):
             response = self._client.send(request, stream=True)
 
             if response.status_code >= 400:
+                response.read()  # the error body is needed for the APIError
                 self._raise_for_status(response)
 
             return response
@@ -269,6 +269,7 @@ class AsyncClient(BaseClient):
             response = await self._client.send(request, stream=True)
 
             if response.status_code >= 400:
+                await response.aread()  # the error body is needed for the APIError
                 await self._raise_for_status(response)
 
             return response
