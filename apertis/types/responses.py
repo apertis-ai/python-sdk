@@ -162,7 +162,8 @@ class ResponseStreamEvent(BaseModel):
     item_id: Optional[str] = None
     output_index: Optional[int] = None
     content_index: Optional[int] = None
-    delta: Optional[str] = None
+    # A string for text, argument and audio deltas; Any so an unforeseen shape cannot end the stream.
+    delta: Any = None
     text: Optional[str] = None
     item: Optional[Dict[str, Any]] = None
     part: Optional[Dict[str, Any]] = None

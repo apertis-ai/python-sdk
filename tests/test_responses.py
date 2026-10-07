@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import List
+from typing import Any, Dict, List
 
 import httpx
 import pytest
@@ -327,7 +327,7 @@ class TestTypedInputParts:
     def test_thinking_budget_tokens_type_checks(self) -> None:
         thinking: ThinkingConfig = {"type": "enabled", "budget_tokens": 2048}
         assert thinking["budget_tokens"] == 2048
-def _sse(*events: dict, done: bool = True) -> bytes:
+def _sse(*events: Dict[str, Any], done: bool = True) -> bytes:
     """Encode events as the gateway streams /v1/responses."""
     body = b"".join(f"event: {e['type']}\ndata: {json.dumps(e)}\n\n".encode() for e in events)
     return body + (b"data: [DONE]\n\n" if done else b"")
@@ -420,6 +420,32 @@ class TestResponsesStream:
 
         with pytest.raises(APIError, match="upstream failed"):
             list(client.responses.create(model="gpt-5.4", input="Hi", stream=True))
+
+    @respx.mock
+    def test_error_type_maps_when_code_is_unknown(self, client: Apertis) -> None:
+        error = {"error": {"type": "invalid_request_error", "code": "model_not_found", "message": "no model"}}
+        respx.post("https://api.apertis.ai/v1/responses").mock(
+            return_value=httpx.Response(200, content=b"data: " + json.dumps(error).encode() + b"\n\n")
+        )
+
+        with pytest.raises(APIError) as exc:
+            list(client.responses.create(model="gpt-5.4", input="Hi", stream=True))
+        assert exc.value.status_code == 400
+
+    @respx.mock
+    def test_response_failed_is_an_event(self, client: Apertis) -> None:
+        failed = {
+            "type": "response.failed",
+            "response": {"id": "resp_1", "status": "failed", "error": {"code": "server_error", "message": "x"}},
+        }
+        respx.post("https://api.apertis.ai/v1/responses").mock(
+            return_value=httpx.Response(200, content=_sse(failed, {"type": "response.mcp_call_arguments.delta", "delta": {"a": 1}}))
+        )
+
+        events = list(client.responses.create(model="gpt-5.4", input="Hi", stream=True))
+
+        assert [e.type for e in events] == ["response.failed", "response.mcp_call_arguments.delta"]
+        assert events[1].delta == {"a": 1}
 
     @respx.mock
     def test_non_streaming_body_has_no_stream_key(self, client: Apertis) -> None:

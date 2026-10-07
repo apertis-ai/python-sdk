@@ -36,11 +36,11 @@ def _parse_event(data: Dict[str, Any], response: "httpx.Response") -> ResponseSt
     if data.get("type") == "error" or ("type" not in data and "error" in data):
         error = data.get("error")
         error = error if isinstance(error, dict) else data
-        kind = error.get("code") or error.get("type")
+        # The stream itself is HTTP 200; the error code or type says what failed.
+        status = _ERROR_STATUS.get(str(error.get("code"))) or _ERROR_STATUS.get(str(error.get("type")), 500)
         raise _make_api_error(
             str(error.get("message") or data),
-            # The stream itself is HTTP 200; the error code says what failed.
-            status_code=_ERROR_STATUS.get(str(kind), 500),
+            status_code=status,
             response=response,
             body=data,
         )
