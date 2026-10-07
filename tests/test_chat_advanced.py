@@ -422,3 +422,71 @@ class TestStreamOptions:
 
         assert response.usage is not None
         assert response.usage.total_tokens == 15
+
+
+_TOOL_CALL_COMPLETION = {
+    "id": "chatcmpl-123",
+    "object": "chat.completion",
+    "created": 1234567890,
+    "model": "gpt-5.4",
+    "choices": [
+        {
+            "index": 0,
+            "message": {"role": "assistant", "content": "Done."},
+            "finish_reason": "stop",
+        }
+    ],
+}
+
+
+class TestToolCallingParams:
+    """parallel_tool_calls and max_completion_tokens are top-level request fields."""
+
+    @respx.mock
+    def test_sync_sends_top_level_fields(self, client: Apertis) -> None:
+        route = respx.post("https://api.apertis.ai/v1/chat/completions").mock(
+            return_value=httpx.Response(200, json=_TOOL_CALL_COMPLETION)
+        )
+
+        client.chat.completions.create(
+            model="gpt-5.4",
+            messages=[{"role": "user", "content": "Weather in Paris and Tokyo?"}],
+            parallel_tool_calls=False,
+            max_completion_tokens=256,
+        )
+
+        body = json.loads(route.calls[0].request.content)
+        assert body["parallel_tool_calls"] is False
+        assert body["max_completion_tokens"] == 256
+        assert "extra_body" not in body
+
+    @respx.mock
+    async def test_async_sends_top_level_fields(self, async_client: AsyncApertis) -> None:
+        route = respx.post("https://api.apertis.ai/v1/chat/completions").mock(
+            return_value=httpx.Response(200, json=_TOOL_CALL_COMPLETION)
+        )
+
+        await async_client.chat.completions.create(
+            model="gpt-5.4",
+            messages=[{"role": "user", "content": "Weather in Paris and Tokyo?"}],
+            parallel_tool_calls=True,
+            max_completion_tokens=256,
+        )
+
+        body = json.loads(route.calls[0].request.content)
+        assert body["parallel_tool_calls"] is True
+        assert body["max_completion_tokens"] == 256
+
+    @respx.mock
+    def test_omitted_when_unset(self, client: Apertis) -> None:
+        route = respx.post("https://api.apertis.ai/v1/chat/completions").mock(
+            return_value=httpx.Response(200, json=_TOOL_CALL_COMPLETION)
+        )
+
+        client.chat.completions.create(
+            model="gpt-5.4", messages=[{"role": "user", "content": "Hi"}]
+        )
+
+        body = json.loads(route.calls[0].request.content)
+        assert "parallel_tool_calls" not in body
+        assert "max_completion_tokens" not in body

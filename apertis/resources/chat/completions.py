@@ -43,6 +43,7 @@ class Completions:
         stream: Literal[True],
         temperature: float | None = None,
         max_tokens: int | None = None,
+        max_completion_tokens: int | None = None,
         top_p: float | None = None,
         frequency_penalty: float | None = None,
         presence_penalty: float | None = None,
@@ -50,6 +51,7 @@ class Completions:
         seed: int | None = None,
         tools: Sequence[ChatCompletionToolParam] | None = None,
         tool_choice: str | dict[str, Any] | None = None,
+        parallel_tool_calls: bool | None = None,
         response_format: dict[str, Any] | None = None,
         user: str | None = None,
         logprobs: bool | None = None,
@@ -85,6 +87,7 @@ class Completions:
         stream: Literal[False] = False,
         temperature: float | None = None,
         max_tokens: int | None = None,
+        max_completion_tokens: int | None = None,
         top_p: float | None = None,
         frequency_penalty: float | None = None,
         presence_penalty: float | None = None,
@@ -92,6 +95,7 @@ class Completions:
         seed: int | None = None,
         tools: Sequence[ChatCompletionToolParam] | None = None,
         tool_choice: str | dict[str, Any] | None = None,
+        parallel_tool_calls: bool | None = None,
         response_format: dict[str, Any] | None = None,
         user: str | None = None,
         logprobs: bool | None = None,
@@ -127,6 +131,7 @@ class Completions:
         stream: bool = False,
         temperature: float | None = None,
         max_tokens: int | None = None,
+        max_completion_tokens: int | None = None,
         top_p: float | None = None,
         frequency_penalty: float | None = None,
         presence_penalty: float | None = None,
@@ -134,6 +139,7 @@ class Completions:
         seed: int | None = None,
         tools: Sequence[ChatCompletionToolParam] | None = None,
         tool_choice: str | dict[str, Any] | None = None,
+        parallel_tool_calls: bool | None = None,
         response_format: dict[str, Any] | None = None,
         user: str | None = None,
         logprobs: bool | None = None,
@@ -168,6 +174,7 @@ class Completions:
         stream: bool = False,
         temperature: float | None = None,
         max_tokens: int | None = None,
+        max_completion_tokens: int | None = None,
         top_p: float | None = None,
         frequency_penalty: float | None = None,
         presence_penalty: float | None = None,
@@ -175,6 +182,7 @@ class Completions:
         seed: int | None = None,
         tools: Sequence[ChatCompletionToolParam] | None = None,
         tool_choice: str | dict[str, Any] | None = None,
+        parallel_tool_calls: bool | None = None,
         response_format: dict[str, Any] | None = None,
         user: str | None = None,
         logprobs: bool | None = None,
@@ -208,6 +216,8 @@ class Completions:
             stream: If True, returns a streaming response.
             temperature: Sampling temperature between 0 and 2.
             max_tokens: Maximum number of tokens to generate.
+            max_completion_tokens: Upper bound on generated tokens, including
+                reasoning tokens (newer OpenAI models use this instead of max_tokens).
             top_p: Nucleus sampling parameter.
             frequency_penalty: Penalty for token frequency.
             presence_penalty: Penalty for token presence.
@@ -215,6 +225,7 @@ class Completions:
             seed: Random seed for deterministic results.
             tools: A list of tools the model may call.
             tool_choice: Controls which tool is called.
+            parallel_tool_calls: Whether the model may call several tools in one turn.
             response_format: Format specification for the response.
             user: A unique identifier for the end-user.
             logprobs: Whether to return log probabilities.
@@ -239,6 +250,7 @@ class Completions:
             stream=stream,
             temperature=temperature,
             max_tokens=max_tokens,
+            max_completion_tokens=max_completion_tokens,
             top_p=top_p,
             frequency_penalty=frequency_penalty,
             presence_penalty=presence_penalty,
@@ -246,6 +258,7 @@ class Completions:
             seed=seed,
             tools=tools,
             tool_choice=tool_choice,
+            parallel_tool_calls=parallel_tool_calls,
             response_format=response_format,
             user=user,
             logprobs=logprobs,
@@ -456,6 +469,7 @@ class AsyncCompletions:
         stream: Literal[True],
         temperature: float | None = None,
         max_tokens: int | None = None,
+        max_completion_tokens: int | None = None,
         top_p: float | None = None,
         frequency_penalty: float | None = None,
         presence_penalty: float | None = None,
@@ -463,6 +477,7 @@ class AsyncCompletions:
         seed: int | None = None,
         tools: Sequence[ChatCompletionToolParam] | None = None,
         tool_choice: str | dict[str, Any] | None = None,
+        parallel_tool_calls: bool | None = None,
         response_format: dict[str, Any] | None = None,
         user: str | None = None,
         logprobs: bool | None = None,
@@ -491,6 +506,7 @@ class AsyncCompletions:
         stream: Literal[False] = False,
         temperature: float | None = None,
         max_tokens: int | None = None,
+        max_completion_tokens: int | None = None,
         top_p: float | None = None,
         frequency_penalty: float | None = None,
         presence_penalty: float | None = None,
@@ -498,6 +514,7 @@ class AsyncCompletions:
         seed: int | None = None,
         tools: Sequence[ChatCompletionToolParam] | None = None,
         tool_choice: str | dict[str, Any] | None = None,
+        parallel_tool_calls: bool | None = None,
         response_format: dict[str, Any] | None = None,
         user: str | None = None,
         logprobs: bool | None = None,
@@ -526,6 +543,7 @@ class AsyncCompletions:
         stream: bool = False,
         temperature: float | None = None,
         max_tokens: int | None = None,
+        max_completion_tokens: int | None = None,
         top_p: float | None = None,
         frequency_penalty: float | None = None,
         presence_penalty: float | None = None,
@@ -533,6 +551,7 @@ class AsyncCompletions:
         seed: int | None = None,
         tools: Sequence[ChatCompletionToolParam] | None = None,
         tool_choice: str | dict[str, Any] | None = None,
+        parallel_tool_calls: bool | None = None,
         response_format: dict[str, Any] | None = None,
         user: str | None = None,
         logprobs: bool | None = None,
@@ -560,6 +579,7 @@ class AsyncCompletions:
         stream: bool = False,
         temperature: float | None = None,
         max_tokens: int | None = None,
+        max_completion_tokens: int | None = None,
         top_p: float | None = None,
         frequency_penalty: float | None = None,
         presence_penalty: float | None = None,
@@ -567,6 +587,7 @@ class AsyncCompletions:
         seed: int | None = None,
         tools: Sequence[ChatCompletionToolParam] | None = None,
         tool_choice: str | dict[str, Any] | None = None,
+        parallel_tool_calls: bool | None = None,
         response_format: dict[str, Any] | None = None,
         user: str | None = None,
         logprobs: bool | None = None,
@@ -595,6 +616,7 @@ class AsyncCompletions:
             stream=stream,
             temperature=temperature,
             max_tokens=max_tokens,
+            max_completion_tokens=max_completion_tokens,
             top_p=top_p,
             frequency_penalty=frequency_penalty,
             presence_penalty=presence_penalty,
@@ -602,6 +624,7 @@ class AsyncCompletions:
             seed=seed,
             tools=tools,
             tool_choice=tool_choice,
+            parallel_tool_calls=parallel_tool_calls,
             response_format=response_format,
             user=user,
             logprobs=logprobs,
@@ -762,6 +785,7 @@ def _build_request_body(
     stream: bool,
     temperature: float | None,
     max_tokens: int | None,
+    max_completion_tokens: int | None,
     top_p: float | None,
     frequency_penalty: float | None,
     presence_penalty: float | None,
@@ -769,6 +793,7 @@ def _build_request_body(
     seed: int | None,
     tools: Sequence[ChatCompletionToolParam] | None,
     tool_choice: str | dict[str, Any] | None,
+    parallel_tool_calls: bool | None,
     response_format: dict[str, Any] | None,
     user: str | None,
     logprobs: bool | None,
@@ -799,6 +824,8 @@ def _build_request_body(
         body["temperature"] = temperature
     if max_tokens is not None:
         body["max_tokens"] = max_tokens
+    if max_completion_tokens is not None:
+        body["max_completion_tokens"] = max_completion_tokens
     if top_p is not None:
         body["top_p"] = top_p
     if frequency_penalty is not None:
@@ -813,6 +840,8 @@ def _build_request_body(
         body["tools"] = list(tools)
     if tool_choice is not None:
         body["tool_choice"] = tool_choice
+    if parallel_tool_calls is not None:
+        body["parallel_tool_calls"] = parallel_tool_calls
     if response_format is not None:
         body["response_format"] = response_format
     if user is not None:
