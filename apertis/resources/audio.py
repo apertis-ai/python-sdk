@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 from typing import IO, TYPE_CHECKING, Any, Dict, List, Literal, Optional, Tuple, Union
@@ -13,8 +14,16 @@ if TYPE_CHECKING:
 
     from apertis._base_client import AsyncClient, SyncClient
 
-# A path, an open binary file, raw bytes, or a (filename, bytes) tuple.
-FileTypes = Union[str, "os.PathLike[str]", bytes, IO[bytes], Tuple[str, Union[bytes, IO[bytes]]]]
+# A path, an open binary file, raw bytes, or a (filename, bytes[, content_type]) tuple.
+FileContent = Union[bytes, IO[bytes]]
+FileTypes = Union[
+    str,
+    "os.PathLike[str]",
+    bytes,
+    IO[bytes],
+    Tuple[str, FileContent],
+    Tuple[str, FileContent, str],
+]
 AudioResponseFormat = Literal["json", "text", "srt", "verbose_json", "vtt"]
 _TEXT_FORMATS = {"text", "srt", "vtt"}
 
@@ -34,26 +43,38 @@ class BinaryResponseContent:
         Path(file).write_bytes(self.content)
 
 
-def _read_file(file: FileTypes) -> Tuple[str, bytes]:
-    """Return (filename, bytes), reading the file once so retries resend the same bytes."""
+def _read_file(file: FileTypes) -> Tuple[Any, ...]:
+    """Return an httpx file tuple, reading the file once so retries resend the same bytes."""
     if isinstance(file, tuple):
-        name, content = file
-        return name, content if isinstance(content, bytes) else content.read()
+        name, content, *content_type = file
+        return (name, content if isinstance(content, bytes) else content.read(), *content_type)
     if isinstance(file, bytes):
-        return "upload", file
+        return ("upload", file)
     if isinstance(file, (str, os.PathLike)):
         path = Path(file)
-        return path.name, path.read_bytes()
-    return os.path.basename(getattr(file, "name", "upload")), file.read()
+        return (path.name, path.read_bytes())
+    file_name = getattr(file, "name", None)
+    return (os.path.basename(file_name) if isinstance(file_name, str) else "upload", file.read())
+
+
+def _form_value(value: Any) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (dict, list)):
+        return json.dumps(value)
+    return str(value)
 
 
 def _form(fields: Dict[str, Any]) -> Dict[str, Any]:
-    """Multipart form fields: drop None, stringify scalars, keep lists as repeated fields."""
+    """Multipart form fields: drop None, keep `name[]` lists as repeated fields, JSON-encode objects."""
     form: Dict[str, Any] = {}
     for key, value in fields.items():
         if value is None:
             continue
-        form[key] = [str(v) for v in value] if isinstance(value, list) else str(value)
+        if key.endswith("[]") and isinstance(value, list):
+            form[key] = [_form_value(v) for v in value]
+        else:
+            form[key] = _form_value(value)
     return form
 
 

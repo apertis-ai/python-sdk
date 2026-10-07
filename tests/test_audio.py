@@ -158,3 +158,45 @@ class TestTranslations:
         )
 
         assert result == "Good morning."
+
+
+class TestMultipartEdgeCases:
+    @respx.mock
+    def test_lowercase_default_content_type_is_dropped(self) -> None:
+        route = respx.post(f"{BASE}/audio/transcriptions").mock(
+            return_value=httpx.Response(200, json={"text": "ok"})
+        )
+
+        with Apertis(default_headers={"content-type": "application/json"}) as client:
+            client.audio.transcriptions.create(file=("a.mp3", AUDIO), model="whisper-1")
+
+        _multipart(route.calls[0].request)
+
+    @respx.mock
+    def test_form_values_bool_and_object(self, client: Apertis) -> None:
+        route = respx.post(f"{BASE}/audio/transcriptions").mock(
+            return_value=httpx.Response(200, json={"text": "ok"})
+        )
+
+        client.audio.transcriptions.create(
+            file=("a.mp3", AUDIO, "audio/mpeg"),
+            model="whisper-1",
+            extra_body={"diarize": True, "chunking_strategy": {"type": "auto"}},
+        )
+
+        content = _multipart(route.calls[0].request)
+        assert b'name="diarize"\r\n\r\ntrue' in content
+        assert b'name="chunking_strategy"\r\n\r\n{"type": "auto"}' in content
+        assert b"Content-Type: audio/mpeg" in content
+
+    @respx.mock
+    def test_file_object_without_str_name(self, client: Apertis, tmp_path: Path) -> None:
+        import os
+
+        respx.post(f"{BASE}/audio/transcriptions").mock(
+            return_value=httpx.Response(200, json={"text": "ok"})
+        )
+        path = tmp_path / "a.mp3"
+        path.write_bytes(AUDIO)
+        with os.fdopen(os.open(path, os.O_RDONLY), "rb") as f:
+            assert client.audio.transcriptions.create(file=f, model="whisper-1").text == "ok"

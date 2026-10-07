@@ -83,7 +83,8 @@ class SyncClient(BaseClient):
         request_headers = self._build_headers(headers)
         if files is not None:
             # httpx sets the multipart content type with its boundary.
-            request_headers.pop("Content-Type", None)
+            for key in [k for k in request_headers if k.lower() == "content-type"]:
+                del request_headers[key]
 
         retries = 0
         last_exception: Optional[Exception] = None
@@ -219,7 +220,8 @@ class AsyncClient(BaseClient):
         request_headers = self._build_headers(headers)
         if files is not None:
             # httpx sets the multipart content type with its boundary.
-            request_headers.pop("Content-Type", None)
+            for key in [k for k in request_headers if k.lower() == "content-type"]:
+                del request_headers[key]
 
         retries = 0
         last_exception: Optional[Exception] = None
