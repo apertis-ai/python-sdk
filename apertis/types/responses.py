@@ -147,6 +147,29 @@ class Response(BaseModel):
         )
 
 
+class ResponseStreamEvent(BaseModel):
+    """One event of a streamed Responses API call.
+
+    ``type`` names the event (``response.output_text.delta``, ``response.completed``, ...).
+    Fields not declared here are kept and readable as attributes. Events that the gateway
+    builds itself carry no ``sequence_number`` or ``item_id``.
+    """
+
+    model_config = ConfigDict(extra="allow")
+
+    type: str
+    sequence_number: Optional[int] = None
+    item_id: Optional[str] = None
+    output_index: Optional[int] = None
+    content_index: Optional[int] = None
+    # A string for text, argument and audio deltas; Any so an unforeseen shape cannot end the stream.
+    delta: Any = None
+    text: Optional[str] = None
+    item: Optional[Dict[str, Any]] = None
+    part: Optional[Dict[str, Any]] = None
+    response: Optional[Dict[str, Any]] = None
+
+
 # =============================================================================
 # Request Parameter Types
 # =============================================================================

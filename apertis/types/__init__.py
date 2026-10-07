@@ -69,6 +69,7 @@ from apertis.types.responses import (
     ResponseReasoningItem,
     ResponseFunctionToolCall,
     ResponseUnknownOutputItem,
+    ResponseStreamEvent,
 )
 from apertis.types.messages import (
     Message,
@@ -156,6 +157,7 @@ __all__ = [
     "ResponseReasoningItem",
     "ResponseFunctionToolCall",
     "ResponseUnknownOutputItem",
+    "ResponseStreamEvent",
     # Messages API
     "Message",
     "MessageParam",
