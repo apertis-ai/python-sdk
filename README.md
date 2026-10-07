@@ -481,6 +481,16 @@ response = client.responses.create(
     }],
 )
 
+# Streaming: events keep their Responses API type and fields
+stream = client.responses.create(
+    model="gpt-5.4",
+    input="Write a haiku about programming",
+    stream=True,
+)
+for event in stream:
+    if event.type == "response.output_text.delta":
+        print(event.delta, end="", flush=True)
+
 # With reasoning
 response = client.responses.create(
     model="gpt-5.4",
@@ -624,6 +634,8 @@ the `publish` confirmation value.
   `ResponseInputImage` (`input_image`) and `ResponseInputFile` (`input_file`). The old
   `text` / `image` part types still type-check.
 - Add `budget_tokens` to `ThinkingConfig`.
+- Add `stream` to `responses.create()`: `stream=True` returns `ResponseStreamEvent`
+  events, and an `error` event raises `APIError`.
 
 ### v0.4.0
 - Add `client.audio`: `speech.create()` (binary audio with `write_to_file()`),
