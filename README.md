@@ -606,7 +606,7 @@ the `publish` confirmation value.
 
 ## Changelog
 
-### Unreleased
+### v0.4.0
 - Add `client.audio`: `speech.create()` (binary audio with `write_to_file()`),
   `transcriptions.create()` and `translations.create()` (multipart uploads).
 - Add `stream`, `thinking` and `extra_body` to `messages.create()`, with typed stream
