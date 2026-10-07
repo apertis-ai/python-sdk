@@ -629,7 +629,7 @@ the `publish` confirmation value.
 
 ## Changelog
 
-### Unreleased
+### v0.4.1
 - Type Responses API input parts: `ResponseInputText` (`input_text`),
   `ResponseInputImage` (`input_image`) and `ResponseInputFile` (`input_file`). The old
   `text` / `image` part types still type-check.
