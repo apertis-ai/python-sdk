@@ -316,6 +316,7 @@ response = client.chat.completions.create(
         }
     }],
     tool_choice="auto",
+    parallel_tool_calls=True,  # let the model call several tools in one turn
 )
 
 if response.choices[0].message.tool_calls:
@@ -549,6 +550,9 @@ PyPI Trusted Publishing for the `apertis-ai/python-sdk` repository, workflow
 the `publish` confirmation value.
 
 ## Changelog
+
+### Unreleased
+- Add `parallel_tool_calls` and `max_completion_tokens` to `chat.completions.create()`.
 
 ### v0.3.0
 - Add the current Apertis Web Search request fields and typed top-level sources while
