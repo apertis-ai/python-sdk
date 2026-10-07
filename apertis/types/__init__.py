@@ -55,6 +55,13 @@ from apertis.types.responses import (
     ResponseReasoningContent,
     ResponseUsage,
     ResponseInputItem,
+    ResponseOutputItem,
+    ResponseOutputMessage,
+    ResponseOutputText,
+    ResponseOutputRefusal,
+    ResponseReasoningItem,
+    ResponseFunctionToolCall,
+    ResponseUnknownOutputItem,
 )
 from apertis.types.messages import (
     Message,
@@ -124,6 +131,13 @@ __all__ = [
     "ResponseReasoningContent",
     "ResponseUsage",
     "ResponseInputItem",
+    "ResponseOutputItem",
+    "ResponseOutputMessage",
+    "ResponseOutputText",
+    "ResponseOutputRefusal",
+    "ResponseReasoningItem",
+    "ResponseFunctionToolCall",
+    "ResponseUnknownOutputItem",
     # Messages API
     "Message",
     "MessageParam",

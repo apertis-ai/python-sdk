@@ -5,8 +5,18 @@ from __future__ import annotations
 import httpx
 import pytest
 import respx
+from pydantic import ValidationError
 
-from apertis import Apertis
+from apertis import Apertis, AsyncApertis
+from apertis.types.responses import (
+    Response,
+    ResponseFunctionToolCall,
+    ResponseOutputMessage,
+    ResponseOutputRefusal,
+    ResponseOutputText,
+    ResponseReasoningItem,
+    ResponseUnknownOutputItem,
+)
 
 
 class TestResponsesCreate:
@@ -175,3 +185,113 @@ class TestResponsesCreate:
 
         assert response.status == "completed"
         assert len(response.output[0].content) == 2
+
+
+# Shapes follow the OpenAI Responses API object (openai-python 3.26 types):
+# message items carry `output_text` parts, and reasoning / function_call /
+# other tool items sit beside them in `output`.
+_REAL_SHAPE = {
+    "id": "resp_1",
+    "object": "response",
+    "created_at": 1741476542,
+    "status": "completed",
+    "model": "gpt-5.5",
+    "output": [
+        {
+            "type": "reasoning",
+            "id": "rs_1",
+            "summary": [{"type": "summary_text", "text": "Considered the greeting."}],
+        },
+        {
+            "type": "message",
+            "id": "msg_1",
+            "status": "completed",
+            "role": "assistant",
+            "content": [
+                {"type": "output_text", "text": "Hi", "annotations": []},
+                {"type": "output_text", "text": " there.", "annotations": []},
+            ],
+        },
+        {
+            "type": "function_call",
+            "id": "fc_1",
+            "call_id": "call_1",
+            "name": "get_weather",
+            "arguments": "{\"city\": \"Paris\"}",
+            "status": "completed",
+        },
+        {"type": "web_search_call", "id": "ws_1", "status": "completed"},
+    ],
+    "usage": {"input_tokens": 12, "output_tokens": 30, "total_tokens": 42},
+}
+
+
+class TestResponsesOutputItems:
+    """Real Responses API output parses into typed items."""
+
+    @respx.mock
+    def test_create_parses_real_output(self, client: Apertis) -> None:
+        respx.post("https://api.apertis.ai/v1/responses").mock(
+            return_value=httpx.Response(200, json=_REAL_SHAPE)
+        )
+
+        response = client.responses.create(model="gpt-5.5", input="Hi")
+
+        assert response.output_text == "Hi there."
+        reasoning, message, call, unknown = response.output
+        assert isinstance(reasoning, ResponseReasoningItem)
+        assert reasoning.summary[0]["text"] == "Considered the greeting."
+        assert isinstance(message, ResponseOutputMessage)
+        assert isinstance(message.content[0], ResponseOutputText)
+        assert message.content[0].annotations == []
+        assert isinstance(call, ResponseFunctionToolCall)
+        assert (call.call_id, call.name, call.arguments) == (
+            "call_1",
+            "get_weather",
+            "{\"city\": \"Paris\"}",
+        )
+        # Item types this SDK does not model are kept, not rejected.
+        assert isinstance(unknown, ResponseUnknownOutputItem)
+        assert unknown.type == "web_search_call"
+        assert unknown.model_dump()["status"] == "completed"
+
+    @respx.mock
+    async def test_async_create_parses_real_output(self, async_client: AsyncApertis) -> None:
+        respx.post("https://api.apertis.ai/v1/responses").mock(
+            return_value=httpx.Response(200, json=_REAL_SHAPE)
+        )
+
+        response = await async_client.responses.create(model="gpt-5.5", input="Hi")
+
+        assert response.output_text == "Hi there."
+
+    def test_in_progress_and_refusal(self) -> None:
+        response = Response.model_validate(
+            {
+                **_REAL_SHAPE,
+                "status": "in_progress",
+                "output": [
+                    {
+                        "type": "message",
+                        "id": "msg_1",
+                        "status": "in_progress",
+                        "role": "assistant",
+                        "content": [{"type": "refusal", "refusal": "I can't help with that."}],
+                    }
+                ],
+            }
+        )
+
+        assert response.status == "in_progress"
+        assert isinstance(response.output[0].content[0], ResponseOutputRefusal)
+        assert response.output_text == ""
+
+    def test_message_with_bad_content_still_fails(self) -> None:
+        """A known item type with a malformed body is an error, not an unknown item."""
+        with pytest.raises(ValidationError):
+            Response.model_validate(
+                {
+                    **_REAL_SHAPE,
+                    "output": [{"type": "message", "id": "m", "role": "assistant"}],
+                }
+            )
