@@ -58,7 +58,11 @@ class Stream(Generic[_T]):
                     chunk_data = json.loads(data)
                 except json.JSONDecodeError:
                     continue
-                item = self._parse(chunk_data, self._response)
+                try:
+                    item = self._parse(chunk_data, self._response)
+                except BaseException:
+                    self.close()
+                    raise
                 if item is not None:
                     return item
 
@@ -103,7 +107,11 @@ class AsyncStream(Generic[_T]):
                     chunk_data = json.loads(data)
                 except json.JSONDecodeError:
                     continue
-                item = self._parse(chunk_data, self._response)
+                try:
+                    item = self._parse(chunk_data, self._response)
+                except BaseException:
+                    await self.close()
+                    raise
                 if item is not None:
                     return item
 

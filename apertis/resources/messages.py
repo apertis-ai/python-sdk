@@ -15,16 +15,31 @@ if TYPE_CHECKING:
     from apertis._base_client import AsyncClient, SyncClient
 
 
+# Anthropic error types to the HTTP status the same error has outside a stream.
+_ERROR_STATUS = {
+    "invalid_request_error": 400,
+    "authentication_error": 401,
+    "permission_error": 403,
+    "not_found_error": 404,
+    "request_too_large": 413,
+    "rate_limit_error": 429,
+    "api_error": 500,
+    "overloaded_error": 529,
+}
+
+
 def _parse_event(data: Dict[str, Any], response: "httpx.Response") -> Optional[MessageStreamEvent]:
     """Map one SSE payload to an event: skip pings, raise on error events."""
     event_type = data.get("type")
     if event_type == "ping":
         return None
     if event_type == "error":
-        error = data.get("error") or {}
+        error = data.get("error")
+        error = error if isinstance(error, dict) else {"message": str(error)}
         raise _make_api_error(
             error.get("message") or str(data),
-            status_code=response.status_code,
+            # The stream itself is HTTP 200; the error type says what failed.
+            status_code=_ERROR_STATUS.get(str(error.get("type")), 500),
             response=response,
             body=data,
         )

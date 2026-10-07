@@ -8,7 +8,7 @@ import httpx
 import pytest
 import respx
 
-from apertis import Apertis, APIError, AsyncApertis
+from apertis import Apertis, APIError, AsyncApertis, InternalServerError, RateLimitError
 from apertis.types.messages import RedactedThinkingBlock, TextBlock, ThinkingBlock
 
 
@@ -350,3 +350,45 @@ class TestMessagesThinkingAndExtraBody:
         assert (thinking.thinking, thinking.signature) == ("Add them.", "sig==")
         assert isinstance(redacted, RedactedThinkingBlock)
         assert isinstance(text, TextBlock)
+
+
+class TestMessagesStreamErrors:
+    @respx.mock
+    def test_error_event_maps_type_and_closes_response(self, client: Apertis) -> None:
+        respx.post("https://api.apertis.ai/v1/messages").mock(
+            return_value=httpx.Response(
+                200,
+                content=_sse(
+                    {"type": "error", "error": {"type": "rate_limit_error", "message": "Slow down"}}
+                ),
+            )
+        )
+
+        stream = client.messages.create(
+            model="claude-sonnet-4-6",
+            messages=[{"role": "user", "content": "Hi"}],
+            max_tokens=16,
+            stream=True,
+        )
+        with pytest.raises(RateLimitError, match="Slow down"):
+            next(stream)
+        assert stream._response.is_closed
+
+    @respx.mock
+    async def test_async_overloaded_is_server_error(self, async_client: AsyncApertis) -> None:
+        respx.post("https://api.apertis.ai/v1/messages").mock(
+            return_value=httpx.Response(
+                200,
+                content=_sse({"type": "error", "error": {"type": "overloaded_error", "message": "Overloaded"}}),
+            )
+        )
+
+        stream = await async_client.messages.create(
+            model="claude-sonnet-4-6",
+            messages=[{"role": "user", "content": "Hi"}],
+            max_tokens=16,
+            stream=True,
+        )
+        with pytest.raises(InternalServerError, match="Overloaded"):
+            await stream.__anext__()
+        assert stream._response.is_closed
