@@ -6,7 +6,35 @@ import httpx
 import pytest
 import respx
 
-from apertis import Apertis
+from apertis import Apertis, AsyncApertis
+
+# Rerank is marked unavailable (see TestRerankUnavailable); the remaining tests
+# still pin the request/response contract for when the gateway routes it.
+pytestmark = pytest.mark.filterwarnings("ignore:client.rerank:DeprecationWarning")
+
+
+class TestRerankUnavailable:
+    """The gateway has no /v1/rerank route, so the resource must not look supported."""
+
+    @respx.mock
+    def test_sync_create_warns(self, client: Apertis) -> None:
+        respx.post("https://api.apertis.ai/v1/rerank").mock(
+            return_value=httpx.Response(
+                200, json={"object": "list", "model": "m", "results": []}
+            )
+        )
+        with pytest.warns(DeprecationWarning, match="not currently available"):
+            client.rerank.create(model="m", query="q", documents=["d"])
+
+    @respx.mock
+    async def test_async_create_warns(self, async_client: AsyncApertis) -> None:
+        respx.post("https://api.apertis.ai/v1/rerank").mock(
+            return_value=httpx.Response(
+                200, json={"object": "list", "model": "m", "results": []}
+            )
+        )
+        with pytest.warns(DeprecationWarning, match="not currently available"):
+            await async_client.rerank.create(model="m", query="q", documents=["d"])
 
 
 class TestRerankCreate:

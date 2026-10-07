@@ -46,7 +46,7 @@ print(response.choices[0].message.content)
 - **Extended Thinking**: Deep thinking for complex problems
 - **Messages API**: Anthropic-native message format
 - **Responses API**: OpenAI Responses API format
-- **Rerank API**: Document reranking for RAG
+- **Rerank API**: Document reranking for RAG (not currently available, see below)
 - **Models API**: List and retrieve available models
 - **Type Hints**: Full type annotations for IDE support
 - **Automatic Retries**: Built-in retry logic for transient errors
@@ -426,7 +426,9 @@ response = client.responses.create(
 
 ### Rerank API
 
-Rerank documents for RAG applications:
+> **Not currently available.** The Apertis API does not serve `POST /v1/rerank` yet, so
+> `client.rerank.create()` returns a 404 `NotFoundError` and emits a `DeprecationWarning`.
+> The interface below is kept for when the endpoint ships.
 
 ```python
 results = client.rerank.create(
@@ -533,6 +535,7 @@ Any model available on [Apertis AI](https://apertis.ai), including:
 - `text-embedding-3-small`, `text-embedding-3-large`
 
 ### Rerank Models
+Listed in the model catalog, but not callable until the rerank endpoint ships.
 - `BAAI/bge-reranker-v2-m3`
 - `Qwen/Qwen3-Reranker-0.6B`, `Qwen/Qwen3-Reranker-4B`, `Qwen/Qwen3-Reranker-8B`
 
@@ -553,6 +556,8 @@ the `publish` confirmation value.
 
 ### Unreleased
 - Add `parallel_tool_calls` and `max_completion_tokens` to `chat.completions.create()`.
+- Mark `rerank.create()` as unavailable: it emits a `DeprecationWarning`, because the
+  Apertis API does not serve `POST /v1/rerank`.
 
 ### v0.3.0
 - Add the current Apertis Web Search request fields and typed top-level sources while

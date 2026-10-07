@@ -4,7 +4,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence
 
+from typing_extensions import deprecated
+
 from apertis.types.rerank import RerankResponse
+
+# ponytail: drop the decorator once the gateway serves POST /v1/rerank.
+_UNAVAILABLE = (
+    "client.rerank is not currently available: the Apertis API does not serve "
+    "POST /v1/rerank, so calls return 404."
+)
 
 if TYPE_CHECKING:
     from apertis._base_client import AsyncClient, SyncClient
@@ -16,6 +24,7 @@ class Rerank:
     def __init__(self, client: SyncClient) -> None:
         self._client = client
 
+    @deprecated(_UNAVAILABLE)
     def create(
         self,
         *,
@@ -26,6 +35,9 @@ class Rerank:
         return_documents: bool = False,
     ) -> RerankResponse:
         """Rerank documents by relevance to a query.
+
+        Not currently available: the Apertis API does not serve POST /v1/rerank,
+        so this call returns a 404 NotFoundError.
 
         Args:
             model: ID of the rerank model to use.
@@ -56,6 +68,7 @@ class AsyncRerank:
     def __init__(self, client: AsyncClient) -> None:
         self._client = client
 
+    @deprecated(_UNAVAILABLE)
     async def create(
         self,
         *,
