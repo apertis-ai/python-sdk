@@ -2,14 +2,20 @@
 
 from __future__ import annotations
 
+import json
+from typing import List
+
 import httpx
 import pytest
 import respx
 from pydantic import ValidationError
 
 from apertis import Apertis, AsyncApertis
+from apertis.types.chat import ThinkingConfig
 from apertis.types.responses import (
     Response,
+    ResponseInputContent,
+    ResponseInputItem,
     ResponseFunctionToolCall,
     ResponseOutputMessage,
     ResponseOutputRefusal,
@@ -295,3 +301,28 @@ class TestResponsesOutputItems:
                     "output": [{"type": "message", "id": "m", "role": "assistant"}],
                 }
             )
+
+
+class TestTypedInputParts:
+    """Spec part types are accepted and sent unchanged."""
+
+    @respx.mock
+    def test_input_parts_sent_unchanged(self, client: Apertis) -> None:
+        route = respx.post("https://api.apertis.ai/v1/responses").mock(
+            return_value=httpx.Response(200, json=_REAL_SHAPE)
+        )
+        content: List[ResponseInputContent] = [
+            {"type": "input_text", "text": "Describe both."},
+            {"type": "input_image", "image_url": "https://example.com/cat.png", "detail": "low"},
+            {"type": "input_file", "file_data": "data:application/pdf;base64,JVBERi0=", "filename": "a.pdf"},
+            {"type": "text", "text": "legacy part"},
+        ]
+        item: ResponseInputItem = {"type": "message", "role": "user", "content": content}
+
+        client.responses.create(model="gpt-5.4", input=[item])
+
+        assert json.loads(route.calls[0].request.content)["input"] == [item]
+
+    def test_thinking_budget_tokens_type_checks(self) -> None:
+        thinking: ThinkingConfig = {"type": "enabled", "budget_tokens": 2048}
+        assert thinking["budget_tokens"] == 2048

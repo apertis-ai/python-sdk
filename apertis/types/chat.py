@@ -106,9 +106,13 @@ class ReasoningConfig(TypedDict, total=False):
 
 
 class ThinkingConfig(TypedDict, total=False):
-    """Extended thinking configuration for Gemini models."""
+    """Extended thinking configuration.
+
+    ``budget_tokens`` is read when the request goes to a Claude model.
+    """
 
     type: Literal["enabled", "disabled", "auto"]
+    budget_tokens: int
 
 
 class GeminiThinkingConfig(TypedDict, total=False):
